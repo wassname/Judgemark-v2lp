@@ -109,7 +109,7 @@ Contributions and bug reports are welcome! If youâ€™d like to add new featuresâ€
 
 ## License
 
-This project is licensed under an [MIT License](LICENSE.md). See the `LICENSE.md` file for more details.
+This project is licensed under an [MIT License](LICENSE). See the `LICENSE` file for more details.
 
 ## Acknowledgments
 
