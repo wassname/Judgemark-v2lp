@@ -1,0 +1,16 @@
+model,judgemark_score,judgemark_score_raw,kendall_tau_bootstrapped,std_dev,kw_stat,ci99_overlap_magnitude_sum_norm,calibrated_score_range_norm,modulated_ci95,emd_norm
+ministral/Ministral-3b-instruct,7.5,15.06,0.0,0.099,0.013,0.094,0.858,0.012,0.363
+gpt-4o-mini,44.05,44.35,0.628,0.438,0.298,0.324,3.149,0.109,1.187
+deepseek-ai/deepseek-r1,76.97,71.77,0.863,0.821,0.905,0.683,6.098,0.6,2.195
+claude-3.5-haiku-20241022,77.64,76.88,0.898,0.832,0.891,0.665,5.975,0.575,2.229
+claude-3.5-sonnet-20240620,78.84,74.72,0.905,0.83,0.902,0.664,6.255,0.591,2.232
+microsoft/wizardlm-2-8x22b,55.42,52.86,0.749,0.566,0.463,0.417,4.62,0.198,1.53
+gpt-4o-2024-11-20,82.51,77.75,0.89,0.837,0.985,0.75,6.233,0.814,2.228
+gemini-2.0-flash-thinking-exp-1219,71.79,66.1,0.818,0.765,0.817,0.631,5.519,0.453,2.057
+deepseek-ai/deepseek-r1-distill-llama-70b,59.67,56.86,0.764,0.642,0.6,0.474,4.485,0.243,1.726
+mistralai/mistral-large-instruct-2411,65.63,63.25,0.794,0.732,0.636,0.505,5.873,0.296,1.935
+meta-llama/llama-3.1-8b-instruct,35.72,35.67,0.46,0.401,0.201,0.207,3.232,0.063,1.075
+meta-llama/llama-3.1-405b-instruct,60.09,58.76,0.791,0.633,0.582,0.471,4.515,0.243,1.712
+deepseek/deepseek-r1-distill-qwen-14b,,,,,,,,,
+mistralai/mistral-small-24b-instruct-2501,63.64,61.23,0.808,0.67,0.618,0.504,5.194,0.286,1.802
+liquid/lfm-7b,10.24,14.33,0.139,0.192,0.027,0.0,1.702,0.0,0.584

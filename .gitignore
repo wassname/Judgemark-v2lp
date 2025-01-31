@@ -1,0 +1,8 @@
+.env
+.vscode
+backup
+judgemark_v2_runs.json
+judgemark_v2.1_runs.json
+ministral-repetition-results.json
+*.pyc
+dev
