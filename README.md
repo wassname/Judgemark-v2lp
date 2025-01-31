@@ -65,10 +65,10 @@ python judgemark_v2.py \
 ## How It Works
 
 1. **Reading In Samples**  
-   The script loads `samples_file`, which contains creative snippets from multiple “writer models.”
+   The script loads `samples_file`, which contains completions to creative writing prompts from multiple “writer models.”
 
 2. **Generating Judge Prompts**  
-   For each snippet, we load a partial “judge prompt” from `prompts_file`. This typically includes instructions like:  
+   For each completion, we load a judge prompt from `prompts_file`. This typically includes instructions like:
    ```
    Please assign numeric scores (0-10) for these criteria:
    - Nuanced Characters
@@ -79,18 +79,18 @@ python judgemark_v2.py \
    ```
 
 3. **Sending Requests to the Judge Model**  
-   Each snippet + prompt is sent to the `--judge-model` via the functions in `utils/api.py`. We specify a moderate temperature (often `0.5`) and top-k for variability.
+   Each completion + prompt is sent to the `--judge-model` via the functions in `utils/api.py`. We specify a moderate temperature (often `0.5`) and top-k for variability.
 
 4. **Parsing the Judge Output**  
-   The script captures lines like `Nuanced Characters: 8` or `Weak Dialogue: 3`, extracts the numeric scores, and aggregates them into a single raw score. Negative markers (like “Weak Dialogue”) are inverted so 10 = worst.
+   The script captures lines like `Nuanced Characters: 8` or `Weak Dialogue: 3`, extracts the numeric scores, and aggregates them into a single raw score. Negative criteria (like “Weak Dialogue”) are inverted so 10 = worst.
 
 5. **Storing & Re-Trying**  
-   Results are saved in your designated `runs-file`. If a snippet fails or provides incomplete scores, the script can retry (in subsequent runs) without overwriting previous data.
+   Results are saved in your designated `runs-file`. If an item fails or provides incomplete scores, the script can retry (in subsequent runs) without overwriting previous data.
 
 6. **Final Judgemark Scores**  
    Once all samples are scored:
    - A *raw* Judgemark score is computed from the distribution of assigned scores.  
-   - A *calibrated* score is computed after normalizing each judge’s “score spread” to a standard range.  
+   - A *calibrated* score is computed after normalizing each judge’s “score spread” to a standard distribution anchored to the mean, 25th & 75th percentile, upper & lower range. Calibration linearly transforms the distribution from these anchor points to match an ideal distribution of 0-10 range, 5 mean, and 25th & 75th percentile 
    - Additional metrics quantify how consistent (stable) and discriminative the judge is.
 
 ## Interpreting the Results
