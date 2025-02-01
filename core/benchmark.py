@@ -24,9 +24,8 @@ from core.scoring import (
 from core.scoring import compute_detailed_distribution, compute_detailed_distribution  # etc
 from core.separability import compute_separability_metrics
 from core.stability import run_stability_test, compute_iteration_stability, compute_randomized_iteration_rank_stability_by_item
-from utils.stats import clamp
+from utils.stats import normalize, modulate_x_by_y
 from utils.state import should_exit, executor
-from utils.stats import normalize
 
 def process_sample(model_name: str, iteration_key: str, item_id: str, item_text: str, 
                   prompt_template: str, run_key: str, runs: Dict, runs_file: str,
@@ -234,7 +233,12 @@ def finalize_scores_and_compute_judgemark(runs: dict, run_key: str, samples_data
     raw_emd_norm = normalize(raw_emd, 0, 4)
     raw_overlap_mag = run_data["separability_metrics"]["raw"]["ci99_overlap_magnitude_sum"]
     raw_overlap_mag_norm = normalize(raw_overlap_mag, 0, 26, False)
+    cohens_d_norm_raw = run_data["separability_metrics"]["raw"]["cohens_d_norm"]
+    # modulate ci99 overlap by cohens-d, because weak models have low overlap because they score everything in a tight range.
+    raw_overlap_mag_norm = modulate_x_by_y(raw_overlap_mag_norm, cohens_d_norm_raw)
+
     raw_norm["ci99_overlap_magnitude_sum_norm"] = raw_overlap_mag_norm
+    raw_norm["ci99_overlap_magnitude_pct_norm"] = normalize(run_data["separability_metrics"]["raw"]["ci99_overlap_percentage_adjacent_avg"], 0, 1, False)
 
     # Range of raw model means
     raw_score_range = (
@@ -252,7 +256,7 @@ def finalize_scores_and_compute_judgemark(runs: dict, run_key: str, samples_data
     raw_separability = (
         raw_norm["std_dev"] # std deviation *between* models (separability)
         + raw_norm["kw_stat"] # kruskal-wallis (separability)
-        + raw_norm["ci99_overlap_magnitude_sum_norm"] # confidence interval overlap between adjacently ranked models (separability)
+        + raw_norm["ci99_overlap_magnitude_pct_norm"] # confidence interval overlap between adjacently ranked models (separability)
         + raw_norm["raw_score_range_norm"] # range of assigned scores (separability)
         + run_data["separability_metrics"]["raw"]["modulated_ci95"] # average ci95 per model scored (score stability + separability)
         + raw_emd_norm # earth-movers distance (separability)
@@ -269,7 +273,7 @@ def finalize_scores_and_compute_judgemark(runs: dict, run_key: str, samples_data
         "norm_correlation_with_lmsys_arena": raw_norm["kendall_tau"],
         "norm_std_dev_between_models": raw_norm["std_dev"],
         "norm_kruskall_wallis": raw_norm["kw_stat"],
-        "norm_ci99_adjacent_overlap": raw_norm["ci99_overlap_magnitude_sum_norm"],
+        "norm_ci99_adjacent_overlap": raw_norm["ci99_overlap_magnitude_pct_norm"],
         "norm_score_range": raw_norm["raw_score_range_norm"],
         "norm_intra_model_ci95": run_data["separability_metrics"]["raw"]["modulated_ci95"],
         "norm_earth_movers_distance": raw_emd_norm
@@ -284,7 +288,11 @@ def finalize_scores_and_compute_judgemark(runs: dict, run_key: str, samples_data
     overlap_magnitude_norm = normalize(
         run_data["separability_metrics"]["calibrated"]["ci99_overlap_magnitude_sum"], 0, 26, False
     )
+    cohens_d_norm_calibrated = run_data["separability_metrics"]["calibrated"]["cohens_d_norm"]
+    # modulate ci99 overlap by cohens-d, because weak models have low overlap because they score everything in a tight range.
+    overlap_magnitude_norm = modulate_x_by_y(overlap_magnitude_norm, cohens_d_norm_calibrated)
     norm["ci99_overlap_magnitude_sum_norm"] = overlap_magnitude_norm
+    norm["ci99_overlap_magnitude_pct_norm"] = normalize(run_data["separability_metrics"]["calibrated"]["ci99_overlap_percentage_adjacent_avg"], 0, 1, False)
 
     # Range of calibrated model means
     calibrated_score_range = (
@@ -304,7 +312,7 @@ def finalize_scores_and_compute_judgemark(runs: dict, run_key: str, samples_data
     calibrated_separability = (
         norm["std_dev"] # std deviation *between* models (separability)
         + norm["kw_stat"] # kruskal-wallis (separability)
-        + norm["ci99_overlap_magnitude_sum_norm"] # confidence interval overlap between adjacently ranked models (separability)
+        + norm["ci99_overlap_magnitude_pct_norm"] # confidence interval overlap between adjacently ranked models (separability)
         + norm["calibrated_score_range_norm"] # range of assigned scores (separability)
         + run_data["separability_metrics"]["calibrated"]["modulated_ci95"] # average ci95 per model scored (score stability + separability)
         + emd_norm # earth-movers distance (separability)
@@ -320,7 +328,7 @@ def finalize_scores_and_compute_judgemark(runs: dict, run_key: str, samples_data
         "norm_correlation_with_lmsys_arena": norm["kendall_tau"],
         "norm_std_dev_between_models": norm["std_dev"],
         "norm_kruskall_wallis": norm["kw_stat"],
-        "norm_ci99_adjacent_overlap": norm["ci99_overlap_magnitude_sum_norm"],
+        "norm_ci99_adjacent_overlap": norm["ci99_overlap_magnitude_pct_norm"],
         "norm_score_range": norm["calibrated_score_range_norm"],
         "norm_intra_model_ci95": run_data["separability_metrics"]["calibrated"]["modulated_ci95"],
         "norm_earth_movers_distance": norm

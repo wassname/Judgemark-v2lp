@@ -4,8 +4,8 @@ import math
 import statistics
 import numpy as np
 import scipy.stats
-from typing import Dict, List
-from utils.stats import normalize
+from typing import Dict, List, Tuple
+from utils.stats import normalize, modulate_x_by_y
 
 try:
     from scipy.stats import wasserstein_distance
@@ -97,6 +97,84 @@ def compute_average_ci95(model_scores: Dict[str, List[float]]) -> float:
         half_widths.append(hw)
     return statistics.mean(half_widths) if half_widths else 0.0
 
+
+def scale_interval(ci: Tuple[float, float], factor: float) -> Tuple[float, float]:
+    """
+    Given an interval (low, high), expand it about its midpoint by 'factor'.
+    For example, if factor=1.5, the half-width becomes 1.5 times the original half-width.
+    """
+    low, high = ci
+    mid = (low + high) / 2.0
+    half_width = (high - low) / 2.0
+    new_half = factor * half_width
+    return (mid - new_half, mid + new_half)
+
+def interval_overlap(ciA: Tuple[float, float], ciB: Tuple[float, float]) -> float:
+    """
+    Return the length of the overlap between two intervals.
+    If there is no overlap, returns 0.0.
+    """
+    return max(0.0, min(ciA[1], ciB[1]) - max(ciA[0], ciB[0]))
+
+def compute_adjacent_ci99_overlap_magnitude(
+    model_ci99: Dict[str, Tuple[float, float]],
+    models_sorted: List[str],
+    scale_factor: float,
+) -> Tuple[Dict[str, float], float]:
+    """
+    Compute the absolute overlap magnitude between adjacent models' CI99 intervals.
+    Each CI is first scaled by the given scale_factor.
+    
+    Returns:
+        - A dictionary mapping a pair key (e.g. "ModelA__ModelB") to the overlap length.
+        - The sum of all adjacent overlap magnitudes.
+    """
+    adjacent_overlap_magnitude = {}
+    total_overlap_magnitude = 0.0
+    for i in range(len(models_sorted) - 1):
+        mA, mB = models_sorted[i], models_sorted[i + 1]
+        # Scale each interval before computing overlap
+        scaledA = scale_interval(model_ci99[mA], scale_factor)
+        scaledB = scale_interval(model_ci99[mB], scale_factor)
+        overlap_mag = interval_overlap(scaledA, scaledB)
+        pair_key = f"{mA}__{mB}"
+        adjacent_overlap_magnitude[pair_key] = overlap_mag
+        total_overlap_magnitude += overlap_mag
+    return adjacent_overlap_magnitude, total_overlap_magnitude
+
+def compute_adjacent_ci99_overlap_percentage(
+    model_ci99: Dict[str, Tuple[float, float]],
+    models_sorted: List[str],
+) -> Dict[str, float]:
+    """
+    For each adjacent pair of models (ordered by descending mean),
+    compute the percentage overlap between their (original) CI99 intervals.
+    Since the intervals may have different lengths, for each pair we compute:
+    
+        perc_A = (overlap length) / (length of A's CI99)
+        perc_B = (overlap length) / (length of B's CI99)
+    
+    and then take the average of these two percentages.
+    
+    Returns:
+        A dictionary mapping a pair key (e.g. "ModelA__ModelB") to the average overlap fraction.
+        (e.g., 0.0 means no overlap and 1.0 means complete overlap)
+    """
+    adjacent_overlap_percentage = {}
+    for i in range(len(models_sorted) - 1):
+        mA, mB = models_sorted[i], models_sorted[i + 1]
+        ciA = model_ci99[mA]
+        ciB = model_ci99[mB]
+        overlap = interval_overlap(ciA, ciB)
+        widthA = ciA[1] - ciA[0]
+        widthB = ciB[1] - ciB[0]
+        percA = overlap / widthA if widthA != 0 else 0.0
+        percB = overlap / widthB if widthB != 0 else 0.0
+        avg_perc = (percA + percB) / 2.0
+        pair_key = f"{mA}__{mB}"
+        adjacent_overlap_percentage[pair_key] = avg_perc
+    return adjacent_overlap_percentage
+
 def compute_separability_metrics(
     run_data: dict,
     scores_by_model: Dict[str, List[float]],
@@ -122,6 +200,7 @@ def compute_separability_metrics(
     if "separability_metrics" not in run_data:
         run_data["separability_metrics"] = {}
     run_data["separability_metrics"][label] = {}
+    metrics_label = run_data["separability_metrics"][label]
 
     # ----------------------------------------------------------------
     # 1) Basic stats: model means + 99% CI
@@ -146,45 +225,29 @@ def compute_separability_metrics(
     overlap_count = 0
     for i in range(len(models_sorted) - 1):
         mA, mB = models_sorted[i], models_sorted[i + 1]
+        # Note: ci_intervals_overlap is assumed to be defined elsewhere.
         overlap = ci_intervals_overlap(model_ci99[mA], model_ci99[mB])
         adjacent_overlap[f"{mA}__{mB}"] = overlap
         if overlap:
             overlap_count += 1
-
     adj_frac_overlap = overlap_count / (len(models_sorted) - 1) if len(models_sorted) > 1 else 0.0
 
     # ----------------------------------------------------------------
-    # 3) “Magnitude” of 99% CI overlap between adjacent models
-    #    with optional scaling factor
+    # 3) “Magnitude” of 99% CI overlap between adjacent models (with scaling)
     # ----------------------------------------------------------------
-    def scale_interval(ci: tuple[float, float], factor: float) -> tuple[float, float]:
-        """
-        Given an interval (low, high), expand it about its midpoint by 'factor'.
-        E.g. if factor=1.5, the half-width becomes 1.5 * (original half-width).
-        """
-        low, high = ci
-        mid = (low + high) / 2.0
-        half_width = (high - low) / 2.0
-        new_half = factor * half_width
-        return (mid - new_half, mid + new_half)
-
-    def interval_overlap(ciA: tuple[float, float], ciB: tuple[float, float]) -> float:
-        """Return the length of the overlap between two intervals."""
-        return max(0.0, min(ciA[1], ciB[1]) - max(ciA[0], ciB[0]))
-
-    adjacent_overlap_magnitude = {}
-    sum_overlap_magnitude = 0.0
-    for i in range(len(models_sorted) - 1):
-        mA, mB = models_sorted[i], models_sorted[i + 1]
-        # Scale each interval before computing overlap
-        scaledA = scale_interval(model_ci99[mA], scale_factor)
-        scaledB = scale_interval(model_ci99[mB], scale_factor)
-        overlap_mag = interval_overlap(scaledA, scaledB)
-        adjacent_overlap_magnitude[f"{mA}__{mB}"] = overlap_mag
-        sum_overlap_magnitude += overlap_mag
+    adjacent_overlap_magnitude, sum_overlap_magnitude = compute_adjacent_ci99_overlap_magnitude(
+        model_ci99, models_sorted, scale_factor
+    )
 
     # ----------------------------------------------------------------
-    # 4) Single measure for Cohen’s d (average of absolute Cohen’s d across adjacent pairs)
+    # 4) New: Percentage overlap of the original CI99 ranges between adjacent models
+    # ----------------------------------------------------------------
+    adjacent_overlap_percentage = compute_adjacent_ci99_overlap_percentage(
+        model_ci99, models_sorted
+    )
+
+    # ----------------------------------------------------------------
+    # 5) Single measure for Cohen’s d (average of absolute Cohen’s d across adjacent pairs)
     # ----------------------------------------------------------------
     d_vals = []
     for i in range(len(models_sorted) - 1):
@@ -194,41 +257,52 @@ def compute_separability_metrics(
     avg_cohens_d = sum(d_vals) / len(d_vals) if d_vals else 0.0
 
     # ----------------------------------------------------------------
-    # 5) Optional EMD across all pairs
+    # 6) Optional EMD across all pairs
     # ----------------------------------------------------------------
     emd_data = compute_distributions_distance(scores_by_model)
 
     # ----------------------------------------------------------------
-    # 6) Weighted or modulated average CI95
+    # 7) Weighted or modulated average CI95
     # ----------------------------------------------------------------
     avg_ci95 = compute_average_ci95(scores_by_model)
     norm_ci95 = normalize(avg_ci95, 0.08, 0.45, False)
     norm_cohens_d = normalize(avg_cohens_d, 0, 0.4)
-    #modulated_ci95 = norm_ci95 * norm_cohens_d
-    modulated_ci95 = norm_ci95 # * norm_cohens_d
+    modulated_ci95 = modulate_x_by_y(norm_ci95, norm_cohens_d)
 
     # ----------------------------------------------------------------
     # Store or log results
     # ----------------------------------------------------------------
-    metrics_label = run_data["separability_metrics"][label]
     metrics_label["ci99_overlap_adjacent"] = adjacent_overlap
     metrics_label["adjacent_overlap_fraction"] = adj_frac_overlap
 
-    # New overlap magnitude stats (with scaling)
     metrics_label["ci99_overlap_magnitude_adjacent"] = adjacent_overlap_magnitude
     metrics_label["ci99_overlap_magnitude_sum"] = sum_overlap_magnitude
     metrics_label["ci99_overlap_scale_factor"] = scale_factor
 
+    metrics_label["ci99_overlap_percentage_adjacent"] = adjacent_overlap_percentage
+    ci99_overlap_percentage_adjacent_avg = 0
+    if adjacent_overlap_percentage.items():
+        pct_sum = 0
+        for pair, perc in adjacent_overlap_percentage.items():
+            pct_sum += perc
+        ci99_overlap_percentage_adjacent_avg = pct_sum / len(adjacent_overlap_percentage)
+
+    metrics_label["ci99_overlap_percentage_adjacent_avg"] = ci99_overlap_percentage_adjacent_avg
+
     metrics_label["average_cohens_d_adjacent"] = avg_cohens_d
+    metrics_label["cohens_d_norm"] = norm_cohens_d
     metrics_label["emd"] = emd_data
     metrics_label["average_ci95"] = avg_ci95
-    metrics_label["modulated_ci95"] = modulated_ci95
+    metrics_label["modulated_ci95"] = modulated_ci95    
 
     # Logging summary
     logging.info(f"\n--- {label.upper()} SEPARABILITY METRICS ---")
     logging.info(f"Adjacent 99% CI Overlap fraction: {adj_frac_overlap:.3f}")
     logging.info(f"Sum of adjacent 99% CI Overlap magnitude (scale={scale_factor}): "
                  f"{sum_overlap_magnitude:.3f}")
+    logging.info(f"CI99 Overlap pct: "
+                 f"{ci99_overlap_percentage_adjacent_avg:.3f}")
+    
     logging.info(f"Avg. |Cohen's d| for adjacent pairs: {avg_cohens_d:.3f}")
     logging.info(f"Average EMD across all pairs: {emd_data['average']:.3f}")
     logging.info(f"Avg. CI95 half-width: {avg_ci95:.3f} (modulated: {modulated_ci95:.3f})")
