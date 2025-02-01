@@ -52,4 +52,7 @@ MODEL_NAME_REPLACEMENTS = {
     "openai/gpt-4o-2024-11-20": "gpt-4o-2024-11-20",
     "deepseek/deepseek-r1-distill-llama-70b": "deepseek-ai/deepseek-r1-distill-llama-70b",
     "mistralai/mistral-large-2411": "mistralai/mistral-large-instruct-2411",
+    "cohere/command-r-08-2024": "CohereForAI/c4ai-command-r-08-2024",
+    "google/gemini-pro-1.5": "gemini-pro-1_5",
+    "openai/o3-mini": "o3-mini",
 }

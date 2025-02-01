@@ -34,8 +34,11 @@ def send_to_judge_model(messages: List[Dict], judge_model: str, max_retries: int
                 "max_tokens": 8096,
                 #"provider": {
                 #    "order": [
-                #        "DeepSeek"
-                #   ]
+                #        "DeepSeek",
+                #        "DeepInfra",
+                #        "Nebius"
+                #   ],
+                #   "allow_fallbacks": False
                 #}
             }
             response = requests.post(BASE_URL, headers=HEADERS, json=data)

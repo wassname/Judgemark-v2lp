@@ -242,7 +242,7 @@ def finalize_scores_and_compute_judgemark(runs: dict, run_key: str, samples_data
         - min(run_data["raw_model_stats"][model]["mean"] for model in run_data["raw_model_stats"])
     )
     run_data["raw_score_range"] = raw_score_range
-    raw_score_range_norm = normalize(raw_score_range, 0, 8)
+    raw_score_range_norm = normalize(raw_score_range, 0, 10)
     raw_norm["raw_score_range_norm"] = raw_score_range_norm
 
     # Add Kendall's tau from the randomization-based stability measure
@@ -294,7 +294,7 @@ def finalize_scores_and_compute_judgemark(runs: dict, run_key: str, samples_data
               for model in run_data["calibrated_model_stats"])
     )
     run_data["calibrated_score_range"] = calibrated_score_range
-    calibrated_score_range_norm = normalize(calibrated_score_range, 0, 8)
+    calibrated_score_range_norm = normalize(calibrated_score_range, 0, 10)
     norm["calibrated_score_range_norm"] = calibrated_score_range_norm
 
     # Kendall's tau from the randomized stability measure

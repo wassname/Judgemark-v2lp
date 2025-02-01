@@ -185,8 +185,8 @@ def compute_cross_model_stats(scores_by_model_all, scores_by_model_by_iter):
             "pearson_r": normalize(pearson_r, 0.7, 1.0),
             "kendall_tau": normalize(kendall_tau, 0.1, 1.0),
             "anova_f": normalize(f_stat, 0.0, 350.0),
-            "kw_stat": normalize(kw_stat, 0.0, 1500.0),
-            "std_dev": normalize(std_across_models, 0.0, 2.2)
+            "kw_stat": normalize(kw_stat, 0.0, 1800.0),
+            "std_dev": normalize(std_across_models, 0.0, 2.6)
         }
     }
 

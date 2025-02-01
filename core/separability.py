@@ -202,9 +202,10 @@ def compute_separability_metrics(
     # 6) Weighted or modulated average CI95
     # ----------------------------------------------------------------
     avg_ci95 = compute_average_ci95(scores_by_model)
-    norm_ci95 = normalize(avg_ci95, 0.15, 0.45, False)
+    norm_ci95 = normalize(avg_ci95, 0.08, 0.45, False)
     norm_cohens_d = normalize(avg_cohens_d, 0, 0.4)
-    modulated_ci95 = norm_ci95 * norm_cohens_d
+    #modulated_ci95 = norm_ci95 * norm_cohens_d
+    modulated_ci95 = norm_ci95 # * norm_cohens_d
 
     # ----------------------------------------------------------------
     # Store or log results
