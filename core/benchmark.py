@@ -331,7 +331,7 @@ def finalize_scores_and_compute_judgemark(runs: dict, run_key: str, samples_data
         "norm_ci99_adjacent_overlap": norm["ci99_overlap_magnitude_pct_norm"],
         "norm_score_range": norm["calibrated_score_range_norm"],
         "norm_intra_model_ci95": run_data["separability_metrics"]["calibrated"]["modulated_ci95"],
-        "norm_earth_movers_distance": norm
+        "norm_earth_movers_distance": emd_norm
     }
     run_data["final_judgemark_score"] = final_score_calibrated
 
