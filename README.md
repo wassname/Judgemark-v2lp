@@ -1,6 +1,27 @@
 Fork of judgemark to see if using weighted logprob, or ranklogprob work better than the current method
 
+Changes
+- openrouters only
+- get logprobs
+- added options
+  - `--score-weighted`
+  - `--score-ranklog`
 
+
+```bash
+python judgemark_v2.py \
+  --judge-model "openai/gpt-4o-mini" \
+  --samples-file data/judgemark_v2.1_samples.json \
+  --prompts-file data/judge_prompts.json \
+  --runs-file my_judgemark_runs.json \
+  --threads 1 \
+  --num-runs 1 \
+  --save-raw-judge-output
+```
+
+## Results
+
+TODO
 
 ----
 
@@ -23,14 +44,15 @@ The Judgemark leaderboard can be found here: [https://eqbench.com/judgemark-v2.h
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/EQ-bench/Judgemark-v2.git
+   git clone https://github.com/wassname/Judgemark-v2lp.git
    cd Judgemark-v2
    ```
 
 2. **Install Python dependencies** (make sure you’re on Python 3.9+):
 
    ```bash
-   pip install -r requirements.txt
+   uv sync
+   . ./venv/bin/activate  # Activate the virtual environment
    ```
 
 3. **Set up environment variables** to include your judge model’s API credentials. For example, if you’re using OpenAI-compatible endpoints:

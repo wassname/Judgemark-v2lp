@@ -3,7 +3,7 @@ import re
 import uuid
 import time
 import signal
-import logging
+from loguru import logger
 import threading
 import concurrent.futures
 from datetime import datetime
@@ -14,15 +14,15 @@ from collections import defaultdict
 from judgemark_v2lp.utils.file_io import load_json_file, save_json_file
 from judgemark_v2lp.utils.api import send_to_judge_model
 from judgemark_v2lp.utils.visualization import create_side_by_side_score_charts
-from judgemark_v2lp.core.scoring import (
+from judgemark_v2lp.scoring import (
     parse_scores, compute_raw_score, compute_detailed_distribution,
     compute_model_level_stats, compute_cross_model_stats,
     build_landmark_calibration_config, apply_landmark_calibration,
     log_score_summary, confidence_interval_95
 )
-from judgemark_v2lp.core.scoring import compute_detailed_distribution, compute_detailed_distribution  # etc
-from judgemark_v2lp.core.separability import compute_separability_metrics
-from judgemark_v2lp.core.stability import run_stability_test, compute_iteration_stability, compute_randomized_iteration_rank_stability_by_item
+from judgemark_v2lp.scoring import compute_detailed_distribution, compute_detailed_distribution  # etc
+from judgemark_v2lp.separability import compute_separability_metrics
+from judgemark_v2lp.stability import run_stability_test, compute_iteration_stability, compute_randomized_iteration_rank_stability_by_item
 from judgemark_v2lp.utils.stats import normalize, modulate_x_by_y
 from judgemark_v2lp.utils.state import should_exit, executor
 
@@ -74,12 +74,12 @@ def process_sample(model_name: str, iteration_key: str, item_id: str, item_text:
             save_json_file(runs, runs_file)
         
         if raw_score is not None:
-            logging.debug(f"Processed {model_name}/{iteration_key}/{item_id}, raw score: {raw_score:.2f}")
+            logger.debug(f"Processed {model_name}/{iteration_key}/{item_id}, raw score: {raw_score:.2f}")
         else:
-            logging.warning(f"Failed to parse enough scores for {model_name}/{iteration_key}/{item_id}")
+            logger.warning(f"Failed to parse enough scores for {model_name}/{iteration_key}/{item_id}")
             
     except Exception as e:
-        logging.error(f"Error processing item {model_name}/{iteration_key}/{item_id}: {str(e)}")
+        logger.error(f"Error processing item {model_name}/{iteration_key}/{item_id}: {str(e)}")
         with lock:
             iteration_dict[item_id] = {
                 "error": str(e),
@@ -214,10 +214,10 @@ def finalize_scores_and_compute_judgemark(runs: dict, run_key: str, samples_data
     compute_iteration_stability(run_data, label="calibrated")
     random_tau_raw = compute_randomized_iteration_rank_stability_by_item(run_data, label="raw", n_shuffles=1000)
     random_tau_cal = compute_randomized_iteration_rank_stability_by_item(run_data, label="calibrated", n_shuffles=1000)
-    logging.info("Score stability (RAW)")
-    logging.info(f"Randomized average Kendall's tau (raw): {random_tau_raw:.3f}")
-    logging.info("Score stability (CALIBRATED)") 
-    logging.info(f"Randomized average Kendall's tau (calibrated): {random_tau_cal:.3f} "
+    logger.info("Score stability (RAW)")
+    logger.info(f"Randomized average Kendall's tau (raw): {random_tau_raw:.3f}")
+    logger.info("Score stability (CALIBRATED)") 
+    logger.info(f"Randomized average Kendall's tau (calibrated): {random_tau_cal:.3f} "
                  f"({run_data['calibrated_cross_model_stats']['kendall_tau']})")
 
     # 9. Compute the final Judgemark scores (one using raw stats, one using calibrated)
@@ -348,8 +348,8 @@ def finalize_scores_and_compute_judgemark(runs: dict, run_key: str, samples_data
         run_data["calibrated_model_stats"]
     )
 
-    logging.info(f"Final Judgemark (raw)   = {final_score_raw:.3f}")
-    logging.info(f"Final Judgemark (cal)  = {final_score_calibrated:.3f}")
+    logger.info(f"Final Judgemark (raw)   = {final_score_raw:.3f}")
+    logger.info(f"Final Judgemark (cal)  = {final_score_calibrated:.3f}")
 
 
 def sanitize_model_name(name: str) -> str:
@@ -367,7 +367,7 @@ def run_judgemark_v2(
 ) -> str:
     global executor, should_exit
     
-    logging.info(f"Starting Judgemark-v2 using judge model: {judge_model}")
+    logger.info(f"Starting Judgemark-v2 using judge model: {judge_model}")
     runs = load_json_file(runs_file)
     
     # Form the run key using run_id + "__" + sanitized judge model
@@ -426,9 +426,9 @@ def run_judgemark_v2(
                         })
         
         if items_to_process:
-            logging.info(f"Found {len(items_to_process)} items to process in existing run {run_key}")
+            logger.info(f"Found {len(items_to_process)} items to process in existing run {run_key}")
         else:
-            logging.info(f"No items to process in existing run {run_key}")
+            logger.info(f"No items to process in existing run {run_key}")
 
     else:
         # New run - process all items
@@ -448,47 +448,66 @@ def run_judgemark_v2(
     # Ensure concurrency lock
     lock = threading.Lock()
     
-    # Process any items that need retrying
-    all_futures = []
     try:
-        with concurrent.futures.ThreadPoolExecutor(max_workers=num_threads) as exec_:
-            executor = exec_
-            
-            if items_to_process:
-                # Process all items (either retries or new run)
-                for item in items_to_process:
-                    if should_exit:
-                        break
-                        
-                    all_futures.append(
-                        executor.submit(
-                            process_sample,
-                            item["model_name"],
-                            item["iteration_key"],
-                            item["item_id"],
-                            item["item_text"],
-                            item["prompt_template"],
-                            run_key,
-                            runs,
-                            runs_file,
-                            lock,
-                            judge_model,
-                            save_raw_judge_output
-                        )
-                    )
+        if num_threads <= 1:
+            # Single-threaded mode
+            for item in items_to_process:
+                if should_exit:
+                    break
+                process_sample(
+                    item["model_name"],
+                    item["iteration_key"],
+                    item["item_id"],
+                    item["item_text"],
+                    item["prompt_template"],
+                    run_key,
+                    runs,
+                    runs_file,
+                    lock,
+                    judge_model,
+                    save_raw_judge_output
+                )
+        else:
+            # Process any items that need retrying
+            all_futures = []
+            with concurrent.futures.ThreadPoolExecutor(max_workers=num_threads) as exec_:
+                executor = exec_
                 
-                # Display progress bar for tasks
-                for f in tqdm(concurrent.futures.as_completed(all_futures), 
-                              total=len(all_futures), desc="Judging", leave=True):
-                    if should_exit:
-                        break
-                    try:
-                        f.result()
-                    except Exception as exc:
-                        logging.error(f"Exception in worker thread: {exc}")
+                if items_to_process:
+                    # Process all items (either retries or new run)
+                    for item in items_to_process:
+                        if should_exit:
+                            break
+                            
+                        all_futures.append(
+                            executor.submit(
+                                process_sample,
+                                item["model_name"],
+                                item["iteration_key"],
+                                item["item_id"],
+                                item["item_text"],
+                                item["prompt_template"],
+                                run_key,
+                                runs,
+                                runs_file,
+                                lock,
+                                judge_model,
+                                save_raw_judge_output
+                            )
+                        )
+                    
+                    # Display progress bar for tasks
+                    for f in tqdm(concurrent.futures.as_completed(all_futures), 
+                                total=len(all_futures), desc="Judging", leave=True):
+                        if should_exit:
+                            break
+                        try:
+                            f.result()
+                        except Exception as exc:
+                            logger.error(f"Exception in worker thread: {exc}")
     
     except KeyboardInterrupt:
-        logging.warning("KeyboardInterrupt caught in main thread.")
+        logger.warning("KeyboardInterrupt caught in main thread.")
         should_exit = True
         time.sleep(0.1)
     finally:
@@ -513,9 +532,9 @@ def run_judgemark_v2(
         save_json_file(runs, runs_file)
         
         if executor:
-            logging.info("Shutting down executor")
+            logger.info("Shutting down executor")
             executor.shutdown(wait=False)
             executor = None
     
-    logging.info(f"Judgemark-v2 run {run_key} ended with status: {status}")
+    logger.info(f"Judgemark-v2 run {run_key} ended with status: {status}")
     return run_key

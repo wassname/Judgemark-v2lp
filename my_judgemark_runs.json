@@ -1,0 +1,329 @@
+{
+  "8fd38fec-5b00-4199-a74f-db423a762d8f__openai_gpt-4o-mini": {
+    "judge_model": "openai/gpt-4o-mini",
+    "start_time": "2025-07-23T17:11:03.844488",
+    "status": "running",
+    "samples_file": "data/judgemark_v2.1_samples.json",
+    "prompts_file": "data/judge_prompts.json",
+    "results": {
+      "claude-3-5-sonnet-20240620": {
+        "1": {
+          "2": {
+            "parsed_scores": {
+              "Original; Not Derivative": 8.0,
+              "Meaningful Integration of Political and Social Context": 9.0,
+              "Nuanced and Insightful Portrayal of Gladiator's Inner Life": 9.0,
+              "Reads Like Part of a Larger Story": 8.0,
+              "Authentic and Engrossing Ancient Roman Setting": 9.0,
+              "Vivid and Immersive Sensory Details": 9.0,
+              "Imagery and Descriptive Quality": 8.0,
+              "Elegant Prose": 8.0,
+              "Emotionally Engaging": 9.0,
+              "Emotionally Complex": 8.0,
+              "Coherent": 10.0,
+              "Adherence to Instructions": 9.0,
+              "Believable Character Actions": 9.0,
+              "Nuanced Characters": 8.0,
+              "Consistent Voice/Tone of Writing": 9.0,
+              "Meandering": 1.0,
+              "Weak Dialogue": 2.0,
+              "Tell-Don't-Show": 1.0,
+              "Unsurprising or Uncreative": 2.0,
+              "Amateurish": 1.0,
+              "Purple Prose": 2.0,
+              "Overwrought": 1.0,
+              "Incongruent Ending Positivity": 1.0,
+              "Unearned Transformations": 1.0,
+              "Well-earned Lightness or Darkness": 8.0,
+              "Sentences Flow Naturally": 9.0,
+              "Overall Reader Engagement": 9.0,
+              "Overall Impression": 9.0
+            },
+            "timestamp": "2025-07-23T17:13:06.569955",
+            "text_length": 5262,
+            "aggregated_score_raw": 8.68,
+            "judge_response": "[Analysis]\n\nThe test model's response offers a vivid and immersive portrayal of a day in the life of a gladiator, skillfully integrating sensory details to create an authentic ancient Roman setting. The narrative captures the protagonist's physical and emotional struggles, reflecting on the larger social and political issues of the time, such as the disparity between the patricians and the plebeians. The inner life of the gladiator is nuanced and insightful, revealing a deep sense of resentment and longing for freedom, which adds complexity to the character.\n\nThe writing reads cohesively as part of a larger story, with a clear trajectory that hints at future developments in the protagonist's journey. The sensory details are particularly strong, with effective imagery that engages the reader's senses and brings the setting to life. The prose is generally elegant, with a good command of language that avoids excessive ornamentation, although there are moments where the description could be trimmed for tighter pacing.\n\nEmotionally, the piece resonates well, as it explores themes of identity, struggle, and the desire for agency, making it relatable and compelling. The character's actions and reactions feel believable and consistent with his circumstances, and the voice throughout remains steady and appropriate for the setting.\n\nWhile the dialogue is minimal, it serves its purpose, providing insights into character relationships and the gladiatorial world without feeling forced. The narrative does not meander, maintaining focus on the protagonist's experiences and thoughts. There are no instances of unearned positivity or transformations, and the ending feels congruent with the overall tone of the piece.\n\nOverall, the response is engaging and well-crafted, successfully meeting the prompt's requirements while delivering a strong emotional and thematic impact.\n\n[Scores]\n\nOriginal; Not Derivative: 8  \nMeaningful Integration of Political and Social Context: 9  \nNuanced and Insightful Portrayal of Gladiator's Inner Life: 9  \nReads Like Part of a Larger Story: 8  \nAuthentic and Engrossing Ancient Roman Setting: 9  \nVivid and Immersive Sensory Details: 9  \nImagery and Descriptive Quality: 8  \nElegant Prose: 8  \nEmotionally Engaging: 9  \nEmotionally Complex: 8  \nCoherent: 10  \nAdherence to Instructions: 9  \nBelievable Character Actions: 9  \nNuanced Characters: 8  \nConsistent Voice/Tone of Writing: 9  \nMeandering: 1  \nWeak Dialogue: 2  \nTell-Don't-Show: 1  \nUnsurprising or Uncreative: 2  \nAmateurish: 1  \nPurple Prose: 2  \nOverwrought: 1  \nIncongruent Ending Positivity: 1  \nUnearned Transformations: 1  \nWell-earned Lightness or Darkness: 8  \nSentences Flow Naturally: 9  \nOverall Reader Engagement: 9  \nOverall Impression: 9  "
+          }
+        }
+      }
+    }
+  },
+  "c4337076-bb5e-4213-98ac-558fb7a65406__openai_gpt-4o-mini": {
+    "judge_model": "openai/gpt-4o-mini",
+    "start_time": "2025-07-23T17:15:02.537833",
+    "status": "running",
+    "samples_file": "data/judgemark_v2.1_samples.json",
+    "prompts_file": "data/judge_prompts.json",
+    "results": {
+      "claude-3-5-sonnet-20240620": {
+        "1": {
+          "2": {
+            "error": "404 Client Error: Not Found for url: https://openrouter.ai/api/v1/chat/completions",
+            "timestamp": "2025-07-23T17:15:13.424622"
+          },
+          "6": {
+            "error": "404 Client Error: Not Found for url: https://openrouter.ai/api/v1/chat/completions",
+            "timestamp": "2025-07-23T17:15:23.701266"
+          },
+          "9": {
+            "error": "404 Client Error: Not Found for url: https://openrouter.ai/api/v1/chat/completions",
+            "timestamp": "2025-07-23T17:15:33.975049"
+          },
+          "10": {
+            "error": "404 Client Error: Not Found for url: https://openrouter.ai/api/v1/chat/completions",
+            "timestamp": "2025-07-23T17:15:44.290077"
+          },
+          "19": {
+            "error": "404 Client Error: Not Found for url: https://openrouter.ai/api/v1/chat/completions",
+            "timestamp": "2025-07-23T17:15:54.619007"
+          },
+          "20": {
+            "error": "404 Client Error: Not Found for url: https://openrouter.ai/api/v1/chat/completions",
+            "timestamp": "2025-07-23T17:16:04.990844"
+          }
+        }
+      }
+    },
+    "errors": [
+      {
+        "model": "claude-3-5-sonnet-20240620",
+        "iteration": "1",
+        "item_id": "2",
+        "error": "404 Client Error: Not Found for url: https://openrouter.ai/api/v1/chat/completions"
+      },
+      {
+        "model": "claude-3-5-sonnet-20240620",
+        "iteration": "1",
+        "item_id": "6",
+        "error": "404 Client Error: Not Found for url: https://openrouter.ai/api/v1/chat/completions"
+      },
+      {
+        "model": "claude-3-5-sonnet-20240620",
+        "iteration": "1",
+        "item_id": "9",
+        "error": "404 Client Error: Not Found for url: https://openrouter.ai/api/v1/chat/completions"
+      },
+      {
+        "model": "claude-3-5-sonnet-20240620",
+        "iteration": "1",
+        "item_id": "10",
+        "error": "404 Client Error: Not Found for url: https://openrouter.ai/api/v1/chat/completions"
+      },
+      {
+        "model": "claude-3-5-sonnet-20240620",
+        "iteration": "1",
+        "item_id": "19",
+        "error": "404 Client Error: Not Found for url: https://openrouter.ai/api/v1/chat/completions"
+      },
+      {
+        "model": "claude-3-5-sonnet-20240620",
+        "iteration": "1",
+        "item_id": "20",
+        "error": "404 Client Error: Not Found for url: https://openrouter.ai/api/v1/chat/completions"
+      }
+    ]
+  },
+  "ae5dd791-be66-4ec7-a73e-22f9cb18273e__openai_gpt-4o-mini": {
+    "judge_model": "openai/gpt-4o-mini",
+    "start_time": "2025-07-23T17:17:04.826144",
+    "status": "running",
+    "samples_file": "data/judgemark_v2.1_samples.json",
+    "prompts_file": "data/judge_prompts.json",
+    "results": {
+      "claude-3-5-sonnet-20240620": {
+        "1": {
+          "2": {
+            "error": "404 Client Error: Not Found for url: https://openrouter.ai/api/v1/chat/completions",
+            "timestamp": "2025-07-23T17:17:15.449268"
+          },
+          "6": {
+            "error": "404 Client Error: Not Found for url: https://openrouter.ai/api/v1/chat/completions",
+            "timestamp": "2025-07-23T17:17:25.869672"
+          },
+          "9": {
+            "error": "404 Client Error: Not Found for url: https://openrouter.ai/api/v1/chat/completions",
+            "timestamp": "2025-07-23T17:17:36.203090"
+          },
+          "10": {
+            "error": "404 Client Error: Not Found for url: https://openrouter.ai/api/v1/chat/completions",
+            "timestamp": "2025-07-23T17:17:46.855039"
+          }
+        }
+      }
+    },
+    "errors": [
+      {
+        "model": "claude-3-5-sonnet-20240620",
+        "iteration": "1",
+        "item_id": "2",
+        "error": "404 Client Error: Not Found for url: https://openrouter.ai/api/v1/chat/completions"
+      },
+      {
+        "model": "claude-3-5-sonnet-20240620",
+        "iteration": "1",
+        "item_id": "6",
+        "error": "404 Client Error: Not Found for url: https://openrouter.ai/api/v1/chat/completions"
+      },
+      {
+        "model": "claude-3-5-sonnet-20240620",
+        "iteration": "1",
+        "item_id": "9",
+        "error": "404 Client Error: Not Found for url: https://openrouter.ai/api/v1/chat/completions"
+      },
+      {
+        "model": "claude-3-5-sonnet-20240620",
+        "iteration": "1",
+        "item_id": "10",
+        "error": "404 Client Error: Not Found for url: https://openrouter.ai/api/v1/chat/completions"
+      }
+    ]
+  },
+  "62c4fff4-0382-47db-b419-d5acfb30ce1b__openai_gpt-4o-mini": {
+    "judge_model": "openai/gpt-4o-mini",
+    "start_time": "2025-07-23T17:18:48.064895",
+    "status": "running",
+    "samples_file": "data/judgemark_v2.1_samples.json",
+    "prompts_file": "data/judge_prompts.json",
+    "results": {
+      "claude-3-5-sonnet-20240620": {
+        "1": {
+          "2": {
+            "error": "{'message': 'No endpoints found that can handle the requested parameters. To learn more about provider routing, visit: https://openrouter.ai/docs/provider-routing', 'code': 404}",
+            "timestamp": "2025-07-23T17:18:58.737280"
+          },
+          "6": {
+            "error": "{'message': 'No endpoints found that can handle the requested parameters. To learn more about provider routing, visit: https://openrouter.ai/docs/provider-routing', 'code': 404}",
+            "timestamp": "2025-07-23T17:19:09.036124"
+          },
+          "9": {
+            "error": "{'message': 'No endpoints found that can handle the requested parameters. To learn more about provider routing, visit: https://openrouter.ai/docs/provider-routing', 'code': 404}",
+            "timestamp": "2025-07-23T17:19:19.566282"
+          },
+          "10": {
+            "error": "{'message': 'No endpoints found that can handle the requested parameters. To learn more about provider routing, visit: https://openrouter.ai/docs/provider-routing', 'code': 404}",
+            "timestamp": "2025-07-23T17:19:29.887922"
+          },
+          "19": {
+            "error": "{'message': 'No endpoints found that can handle the requested parameters. To learn more about provider routing, visit: https://openrouter.ai/docs/provider-routing', 'code': 404}",
+            "timestamp": "2025-07-23T17:19:40.198755"
+          },
+          "20": {
+            "error": "{'message': 'No endpoints found that can handle the requested parameters. To learn more about provider routing, visit: https://openrouter.ai/docs/provider-routing', 'code': 404}",
+            "timestamp": "2025-07-23T17:19:50.559484"
+          },
+          "22": {
+            "error": "{'message': 'No endpoints found that can handle the requested parameters. To learn more about provider routing, visit: https://openrouter.ai/docs/provider-routing', 'code': 404}",
+            "timestamp": "2025-07-23T17:20:00.907318"
+          }
+        }
+      }
+    },
+    "errors": [
+      {
+        "model": "claude-3-5-sonnet-20240620",
+        "iteration": "1",
+        "item_id": "2",
+        "error": "{'message': 'No endpoints found that can handle the requested parameters. To learn more about provider routing, visit: https://openrouter.ai/docs/provider-routing', 'code': 404}"
+      },
+      {
+        "model": "claude-3-5-sonnet-20240620",
+        "iteration": "1",
+        "item_id": "6",
+        "error": "{'message': 'No endpoints found that can handle the requested parameters. To learn more about provider routing, visit: https://openrouter.ai/docs/provider-routing', 'code': 404}"
+      },
+      {
+        "model": "claude-3-5-sonnet-20240620",
+        "iteration": "1",
+        "item_id": "9",
+        "error": "{'message': 'No endpoints found that can handle the requested parameters. To learn more about provider routing, visit: https://openrouter.ai/docs/provider-routing', 'code': 404}"
+      },
+      {
+        "model": "claude-3-5-sonnet-20240620",
+        "iteration": "1",
+        "item_id": "10",
+        "error": "{'message': 'No endpoints found that can handle the requested parameters. To learn more about provider routing, visit: https://openrouter.ai/docs/provider-routing', 'code': 404}"
+      },
+      {
+        "model": "claude-3-5-sonnet-20240620",
+        "iteration": "1",
+        "item_id": "19",
+        "error": "{'message': 'No endpoints found that can handle the requested parameters. To learn more about provider routing, visit: https://openrouter.ai/docs/provider-routing', 'code': 404}"
+      },
+      {
+        "model": "claude-3-5-sonnet-20240620",
+        "iteration": "1",
+        "item_id": "20",
+        "error": "{'message': 'No endpoints found that can handle the requested parameters. To learn more about provider routing, visit: https://openrouter.ai/docs/provider-routing', 'code': 404}"
+      },
+      {
+        "model": "claude-3-5-sonnet-20240620",
+        "iteration": "1",
+        "item_id": "22",
+        "error": "{'message': 'No endpoints found that can handle the requested parameters. To learn more about provider routing, visit: https://openrouter.ai/docs/provider-routing', 'code': 404}"
+      }
+    ]
+  },
+  "31ffba42-2510-454b-8b48-4965f32b7b01__openai_gpt-4o-mini": {
+    "judge_model": "openai/gpt-4o-mini",
+    "start_time": "2025-07-23T17:20:50.781947",
+    "status": "running",
+    "samples_file": "data/judgemark_v2.1_samples.json",
+    "prompts_file": "data/judge_prompts.json",
+    "results": {}
+  },
+  "5bb9aad6-8fc4-4b2d-aeea-c836534a110a__openai_gpt-4o-mini": {
+    "judge_model": "openai/gpt-4o-mini",
+    "start_time": "2025-07-23T17:20:56.195127",
+    "status": "running",
+    "samples_file": "data/judgemark_v2.1_samples.json",
+    "prompts_file": "data/judge_prompts.json",
+    "results": {
+      "claude-3-5-sonnet-20240620": {
+        "1": {
+          "2": {
+            "error": "{'message': 'No endpoints found that can handle the requested parameters. To learn more about provider routing, visit: https://openrouter.ai/docs/provider-routing', 'code': 404}",
+            "timestamp": "2025-07-23T17:21:06.605472"
+          },
+          "6": {
+            "error": "{'message': 'No endpoints found that can handle the requested parameters. To learn more about provider routing, visit: https://openrouter.ai/docs/provider-routing', 'code': 404}",
+            "timestamp": "2025-07-23T17:21:17.026079"
+          },
+          "9": {
+            "error": "{'message': 'No endpoints found that can handle the requested parameters. To learn more about provider routing, visit: https://openrouter.ai/docs/provider-routing', 'code': 404}",
+            "timestamp": "2025-07-23T17:21:27.317695"
+          },
+          "10": {
+            "error": "{'message': 'No endpoints found that can handle the requested parameters. To learn more about provider routing, visit: https://openrouter.ai/docs/provider-routing', 'code': 404}",
+            "timestamp": "2025-07-23T17:21:37.664878"
+          }
+        }
+      }
+    },
+    "errors": [
+      {
+        "model": "claude-3-5-sonnet-20240620",
+        "iteration": "1",
+        "item_id": "2",
+        "error": "{'message': 'No endpoints found that can handle the requested parameters. To learn more about provider routing, visit: https://openrouter.ai/docs/provider-routing', 'code': 404}"
+      },
+      {
+        "model": "claude-3-5-sonnet-20240620",
+        "iteration": "1",
+        "item_id": "6",
+        "error": "{'message': 'No endpoints found that can handle the requested parameters. To learn more about provider routing, visit: https://openrouter.ai/docs/provider-routing', 'code': 404}"
+      },
+      {
+        "model": "claude-3-5-sonnet-20240620",
+        "iteration": "1",
+        "item_id": "9",
+        "error": "{'message': 'No endpoints found that can handle the requested parameters. To learn more about provider routing, visit: https://openrouter.ai/docs/provider-routing', 'code': 404}"
+      },
+      {
+        "model": "claude-3-5-sonnet-20240620",
+        "iteration": "1",
+        "item_id": "10",
+        "error": "{'message': 'No endpoints found that can handle the requested parameters. To learn more about provider routing, visit: https://openrouter.ai/docs/provider-routing', 'code': 404}"
+      }
+    ]
+  }
+}

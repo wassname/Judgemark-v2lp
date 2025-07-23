@@ -1,7 +1,7 @@
 import sys
 import signal
 import argparse
-import logging
+from loguru import logger
 import time
 
 
@@ -16,13 +16,13 @@ def signal_handler(signum, frame):
     """Handle interrupt signals (SIGINT, SIGTERM)."""
     global executor, should_exit
     print(f"\n[DEBUG] Signal {signum} caught!")
-    logging.warning("Signal handler called")
+    logger.warning("Signal handler called")
     should_exit = True
     time.sleep(0.1)  # Give workers a moment to see the flag
     if executor:
-        logging.info("Shutting down executor from signal handler")
+        logger.info("Shutting down executor from signal handler")
         executor.shutdown(wait=False)
-        logging.info("Executor shutdown complete")
+        logger.info("Executor shutdown complete")
     sys.exit(1)
 
 def parse_args():
@@ -54,7 +54,7 @@ def parse_args():
     parser.add_argument(
         '--threads',
         type=int,
-        default=6,
+        default=0,
         help='Number of threads to use'
     )
     parser.add_argument(
@@ -74,6 +74,18 @@ def parse_args():
         default=False,
         help='If set, store the raw judge model output in the results JSON (default: false)'
     )
+    parser.add_argument(
+        '--score-weighted',
+        action='store_true',
+        default=False,
+        help='If set, use weighted scoring for the judge model (default: false)'
+    )
+    parser.add_argument(
+        '--score-ranked',
+        action='store_true',
+        default=False,
+        help='If set, use ranked logprob scoring for the judge model (default: false)'
+    )
     return parser.parse_args()
 
 if __name__ == "__main__":
@@ -90,18 +102,18 @@ if __name__ == "__main__":
     # Setup logging
     verbosity = get_verbosity(args.verbosity)
     setup_logging(verbosity)
-    logging.debug("Logging initialized")
+    logger.debug("Logging initialized")
     
     # Check that we have an API key for the judge model
     if not API_KEY:
-        logging.critical("No OPENAI_API_KEY found in environment variables.")
+        logger.critical("No OPENAI_API_KEY found in environment variables.")
         raise ValueError("OPENAI_API_KEY not found in environment variables.")
     
     run_ids = []
     for i in range(1, args.num_runs + 1):
         if should_exit:
             break
-        logging.info(f"Starting Judgemark-v2 run {i} of {args.num_runs}")
+        logger.info(f"Starting Judgemark-v2 run {i} of {args.num_runs}")
         rid = run_judgemark_v2(
             judge_model=args.judge_model,
             samples_file=args.samples_file,
@@ -115,11 +127,11 @@ if __name__ == "__main__":
     
     # Finally, print summary
     runs = load_json_file(args.runs_file)
-    logging.info("\nAll Judgemark-v2 runs completed:")
+    logger.info("\nAll Judgemark-v2 runs completed:")
     print("\nAll Judgemark-v2 runs completed:")
     for rid in run_ids:
         rd = runs.get(rid, {})
         final_score = rd.get("final_judgemark_score", "N/A")
-        logging.info(f"Run ID: {rid}, Final Judgemark Score: {final_score}")
+        logger.info(f"Run ID: {rid}, Final Judgemark Score: {final_score}")
         print(f"Run ID: {rid}")
         print(f"Final Judgemark-v2 Score: {final_score}")

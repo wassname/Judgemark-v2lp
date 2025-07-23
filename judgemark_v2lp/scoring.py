@@ -2,7 +2,7 @@ import math
 import statistics
 import numpy as np
 import scipy.stats
-import logging
+from loguru import logger
 from typing import Dict, List
 import re
 from judgemark_v2lp.config.constants import REFERENCE_MODEL_SCORES
@@ -256,14 +256,14 @@ def apply_landmark_calibration(x, config):
 
 def log_score_summary(score_type: str, cross_stats: Dict, model_stats: Dict):
     """Log a readable summary of score statistics."""
-    logging.info(f"\n------- {score_type} Summary -------")
-    logging.info(f"ANOVA F-value: {cross_stats['anova_f']:.4f}, p={cross_stats['anova_p']:.4f}")
-    logging.info(f"Kruskal-Wallis: {cross_stats['kw_stat']:.4f}, p={cross_stats['kw_p']:.4f}")
-    logging.info(f"Pearson r={cross_stats['pearson_r']:.4f}")
-    logging.info(f"Kendall τ={cross_stats['kendall_tau']:.4f}")
-    logging.info(f"Std.Dev across models: {cross_stats['std_dev_across_models']:.4f}")
+    logger.info(f"\n------- {score_type} Summary -------")
+    logger.info(f"ANOVA F-value: {cross_stats['anova_f']:.4f}, p={cross_stats['anova_p']:.4f}")
+    logger.info(f"Kruskal-Wallis: {cross_stats['kw_stat']:.4f}, p={cross_stats['kw_p']:.4f}")
+    logger.info(f"Pearson r={cross_stats['pearson_r']:.4f}")
+    logger.info(f"Kendall τ={cross_stats['kendall_tau']:.4f}")
+    logger.info(f"Std.Dev across models: {cross_stats['std_dev_across_models']:.4f}")
     
-    logging.info("\nModel Scores:")
+    logger.info("\nModel Scores:")
     sorted_models = sorted(
         model_stats.items(),
         key=lambda kv: kv[1]["mean"],
@@ -271,5 +271,5 @@ def log_score_summary(score_type: str, cross_stats: Dict, model_stats: Dict):
     )
     for model, stats in sorted_models:
         line = f"{model:.<40} {stats['mean']:.3f} ±{stats['ci95']:.3f}"
-        logging.info(line)
-    logging.info("------------------------------------")
+        logger.info(line)
+    logger.info("------------------------------------")

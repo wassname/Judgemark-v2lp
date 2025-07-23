@@ -1,5 +1,5 @@
 
-import logging
+from loguru import logger
 import math
 import statistics
 import numpy as np
@@ -296,13 +296,13 @@ def compute_separability_metrics(
     metrics_label["modulated_ci95"] = modulated_ci95    
 
     # Logging summary
-    logging.info(f"\n--- {label.upper()} SEPARABILITY METRICS ---")
-    logging.info(f"Adjacent 99% CI Overlap fraction: {adj_frac_overlap:.3f}")
-    logging.info(f"Sum of adjacent 99% CI Overlap magnitude (scale={scale_factor}): "
+    logger.info(f"\n--- {label.upper()} SEPARABILITY METRICS ---")
+    logger.info(f"Adjacent 99% CI Overlap fraction: {adj_frac_overlap:.3f}")
+    logger.info(f"Sum of adjacent 99% CI Overlap magnitude (scale={scale_factor}): "
                  f"{sum_overlap_magnitude:.3f}")
-    logging.info(f"CI99 Overlap pct: "
+    logger.info(f"CI99 Overlap pct: "
                  f"{ci99_overlap_percentage_adjacent_avg:.3f}")
     
-    logging.info(f"Avg. |Cohen's d| for adjacent pairs: {avg_cohens_d:.3f}")
-    logging.info(f"Average EMD across all pairs: {emd_data['average']:.3f}")
-    logging.info(f"Avg. CI95 half-width: {avg_ci95:.3f} (modulated: {modulated_ci95:.3f})")
+    logger.info(f"Avg. |Cohen's d| for adjacent pairs: {avg_cohens_d:.3f}")
+    logger.info(f"Average EMD across all pairs: {emd_data['average']:.3f}")
+    logger.info(f"Avg. CI95 half-width: {avg_ci95:.3f} (modulated: {modulated_ci95:.3f})")

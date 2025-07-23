@@ -1,6 +1,6 @@
 import os
 import time
-import logging
+from loguru import logger
 import requests
 from typing import List, Dict
 from dotenv import load_dotenv
@@ -32,23 +32,37 @@ def send_to_judge_model(messages: List[Dict], judge_model: str, max_retries: int
                 "temperature": 0.5,
                 "top_k": 3,
                 "max_tokens": 8096,
-                #"provider": {
+
+                "logprobs": True,
+                "top_logprobs": 20,
+
+                ## openrouter specific
+                "provider": {
+                    "require_parameters": True, 
                 #    "order": [
                 #        "DeepSeek",
                 #        "DeepInfra",
                 #        "Nebius"
                 #   ],
                 #   "allow_fallbacks": False
-                #}
+                },
+                "usage": {"include": True},
             }
             response = requests.post(BASE_URL, headers=HEADERS, json=data)
-            response.raise_for_status()
             res_json = response.json()
+            if "error" in res_json:
+                raise requests.exceptions.HTTPError(res_json['error'])
+            response.raise_for_status()
             return res_json['choices'][0]['message']['content']
         except Exception as e:
-            logging.error(f"Error on attempt {attempt} for judge model {judge_model}: {e}")
+            try:
+                logger.debug(response.text)
+            except:
+                pass
+            logger.error(f"Error on attempt {attempt} for judge model {judge_model}: {e}")
+            # TODO print response header or erro
             if attempt == max_retries:
-                logging.critical(f"Max retries reached for judge model {judge_model}")
+                logger.critical(f"Max retries reached for judge model {judge_model}")
                 raise
             time.sleep(RETRY_DELAY)
     return ""

@@ -1,4 +1,4 @@
-import logging
+from loguru import logger
 import concurrent.futures
 from concurrent.futures import ThreadPoolExecutor
 from tqdm import tqdm
@@ -368,12 +368,12 @@ def process_stability_test_item(model_name, iteration_key, item_id, item_text, p
         # Only return actual valid scores, never None
         return item_score if isinstance(item_score, (int, float)) and item_score > 0.0 else 0.0
     except Exception as e:
-        logging.error(f"Error in stability test item {model_name}/{iteration_key}/{item_id}: {str(e)}")
+        logger.error(f"Error in stability test item {model_name}/{iteration_key}/{item_id}: {str(e)}")
         return 0.0
 
 def run_stability_test(run_data, judge_model, judge_prompts, samples_data, runs, runs_file, lock, num_threads):
     """Run stability test, retrying any missing entries to reach STABILITY_REPS per item."""
-    logging.info("Running stability test for selected items...")
+    logger.info("Running stability test for selected items...")
     
     if "stability_test_results" not in run_data:
         run_data["stability_test_results"] = {}
@@ -402,13 +402,13 @@ def run_stability_test(run_data, judge_model, judge_prompts, samples_data, runs,
                     "key_name": key_name
                 })
             
-            logging.info(f"Need {needed_count} more stability test results for {key_name}")
+            logger.info(f"Need {needed_count} more stability test results for {key_name}")
             
             # Clean up existing results, keeping only valid scores
             run_data["stability_test_results"][key_name] = valid_results
     
     if not items_to_process:
-        logging.info("All stability test items already have complete results")
+        logger.info("All stability test items already have complete results")
         return
     
     with ThreadPoolExecutor(max_workers=num_threads) as exec_:
@@ -443,6 +443,6 @@ def run_stability_test(run_data, judge_model, judge_prompts, samples_data, runs,
                         run_data["stability_test_results"][key_name].append(score)
                         save_json_file(runs, runs_file)
                 else:
-                    logging.warning(f"Got invalid score for stability item {key_name}, will need retry")
+                    logger.warning(f"Got invalid score for stability item {key_name}, will need retry")
             except Exception as exc:
-                logging.error(f"Exception in stability test: {exc}")
+                logger.error(f"Exception in stability test: {exc}")
