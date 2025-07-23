@@ -1,3 +1,9 @@
+Fork of judgemark to see if using weighted logprob, or ranklogprob work better than the current method
+
+
+
+----
+
 # Judgemark V2
 
 **Judgemark V2** is a benchmark that evaluates how well a language model can judge creative writing. Instead of relying on simple pairwise preferences, Judgemark V2 prompts the judge model to assign numeric scores for multiple literary criteria (e.g., “Nuanced Characters,” “Overwrought,” “Emotionally Engaging”). It then aggregates those scores, measures how consistent and discriminative they are, and derives a final numeric rating of the judge model’s performance.

@@ -6,3 +6,5 @@ judgemark_v2.1_runs.json
 ministral-repetition-results.json
 *.pyc
 dev
+*.egg-info
+__pycache__

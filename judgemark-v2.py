@@ -5,11 +5,11 @@ import logging
 import time
 
 
-from utils.logging_setup import setup_logging, get_verbosity
-from utils.file_io import load_json_file
-from core.benchmark import run_judgemark_v2
-from utils.api import API_KEY
-from utils.state import should_exit, executor
+from judgemark_v2lp.utils.logging_setup import setup_logging, get_verbosity
+from judgemark_v2lp.utils.file_io import load_json_file
+from judgemark_v2lp.benchmark import run_judgemark_v2
+from judgemark_v2lp.utils.api import API_KEY
+from judgemark_v2lp.utils.state import should_exit, executor
 
 
 def signal_handler(signum, frame):

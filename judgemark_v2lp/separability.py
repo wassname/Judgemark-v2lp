@@ -5,7 +5,7 @@ import statistics
 import numpy as np
 import scipy.stats
 from typing import Dict, List, Tuple
-from utils.stats import normalize, modulate_x_by_y
+from judgemark_v2lp.utils.stats import normalize, modulate_x_by_y
 
 try:
     from scipy.stats import wasserstein_distance

@@ -11,21 +11,20 @@ from typing import Dict, List
 from tqdm import tqdm
 from collections import defaultdict
 
-from utils.file_io import load_json_file, save_json_file
-from utils.api import send_to_judge_model
-from utils.visualization import create_side_by_side_score_charts
-import statistics
-from core.scoring import (
+from judgemark_v2lp.utils.file_io import load_json_file, save_json_file
+from judgemark_v2lp.utils.api import send_to_judge_model
+from judgemark_v2lp.utils.visualization import create_side_by_side_score_charts
+from judgemark_v2lp.core.scoring import (
     parse_scores, compute_raw_score, compute_detailed_distribution,
     compute_model_level_stats, compute_cross_model_stats,
     build_landmark_calibration_config, apply_landmark_calibration,
     log_score_summary, confidence_interval_95
 )
-from core.scoring import compute_detailed_distribution, compute_detailed_distribution  # etc
-from core.separability import compute_separability_metrics
-from core.stability import run_stability_test, compute_iteration_stability, compute_randomized_iteration_rank_stability_by_item
-from utils.stats import normalize, modulate_x_by_y
-from utils.state import should_exit, executor
+from judgemark_v2lp.core.scoring import compute_detailed_distribution, compute_detailed_distribution  # etc
+from judgemark_v2lp.core.separability import compute_separability_metrics
+from judgemark_v2lp.core.stability import run_stability_test, compute_iteration_stability, compute_randomized_iteration_rank_stability_by_item
+from judgemark_v2lp.utils.stats import normalize, modulate_x_by_y
+from judgemark_v2lp.utils.state import should_exit, executor
 
 def process_sample(model_name: str, iteration_key: str, item_id: str, item_text: str, 
                   prompt_template: str, run_key: str, runs: Dict, runs_file: str,

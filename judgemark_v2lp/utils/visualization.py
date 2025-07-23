@@ -5,7 +5,7 @@ import matplotlib.ticker as ticker
 from typing import Dict
 from scipy.stats import linregress
 from scipy.stats import spearmanr, theilslopes
-from config.constants import NEGATIVE_MARKERS, MODEL_NAME_REPLACEMENTS
+from judgemark_v2lp.config.constants import NEGATIVE_MARKERS, MODEL_NAME_REPLACEMENTS
 
 
 def create_side_by_side_score_charts(run_data: Dict, judge_model: str, samples_data: Dict):

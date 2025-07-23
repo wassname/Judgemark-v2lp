@@ -5,8 +5,8 @@ import scipy.stats
 import logging
 from typing import Dict, List
 import re
-from config.constants import REFERENCE_MODEL_SCORES
-from utils.stats import normalize
+from judgemark_v2lp.config.constants import REFERENCE_MODEL_SCORES
+from judgemark_v2lp.utils.stats import normalize
 
 def parse_scores(judge_model_response: str) -> Dict[str,float]:
     """

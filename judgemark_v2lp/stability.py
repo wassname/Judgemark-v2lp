@@ -4,11 +4,11 @@ from concurrent.futures import ThreadPoolExecutor
 from tqdm import tqdm
 from typing import Dict
 
-from utils.api import send_to_judge_model
-from utils.file_io import save_json_file
-from core.scoring import parse_scores, compute_raw_score
-from config.constants import STABILITY_ITEMS, STABILITY_REPS
-from utils.state import should_exit, executor
+from judgemark_v2lp.utils.api import send_to_judge_model
+from judgemark_v2lp.utils.file_io import save_json_file
+from judgemark_v2lp.scoring import parse_scores, compute_raw_score
+from judgemark_v2lp.config.constants import STABILITY_ITEMS, STABILITY_REPS
+from judgemark_v2lp.utils.state import should_exit, executor
 from collections import defaultdict
 import statistics
 import math
