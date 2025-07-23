@@ -18,7 +18,7 @@ from judgemark_v2lp.scoring import (
     parse_scores, compute_raw_score, compute_detailed_distribution,
     compute_model_level_stats, compute_cross_model_stats,
     build_landmark_calibration_config, apply_landmark_calibration,
-    log_score_summary, confidence_interval_95
+    log_score_summary, confidence_interval_95, compute_ranked_score, compute_weighted_score
 )
 from judgemark_v2lp.scoring import compute_detailed_distribution, compute_detailed_distribution  # etc
 from judgemark_v2lp.separability import compute_separability_metrics
@@ -58,12 +58,19 @@ def process_sample(model_name: str, iteration_key: str, item_id: str, item_text:
         judge_response = res_json['choices'][0]['message']['content']
         logprobs = res_json['choices'][0]['logprobs']['content']
         
-        extracted_scores = parse_scores(judge_response, logprobs)
+        extracted_scores, logp = parse_scores(judge_response, logprobs)
+        extracted_wscores = compute_weighted_score(logp)
+        extracted_rscores = compute_ranked_score(logp)
+
         raw_score = compute_raw_score(extracted_scores)
-        
+        raw_score_w = compute_raw_score(extracted_wscores)
+        raw_score_r = compute_raw_score(extracted_rscores)
+
         with lock:
             storage_dict = {
                 "parsed_scores": extracted_scores,
+                "parsed_weighted_scores": extracted_wscores,
+                "parsed_ranked_scores": extracted_rscores,
                 "timestamp": datetime.now().isoformat(),
                 "text_length": text_len
                 # res_json['usage']['cost']
@@ -71,9 +78,13 @@ def process_sample(model_name: str, iteration_key: str, item_id: str, item_text:
             }
             if raw_score is not None:
                 storage_dict["aggregated_score_raw"] = raw_score
+                storage_dict["aggregated_score_weighted"] = raw_score_w
+                storage_dict["aggregated_score_ranked"] = raw_score_r
+            
             if save_raw_judge_output:
                 storage_dict["judge_response"] = judge_response
-            
+                storage_dict["logprobs"] = logprobs
+
             iteration_dict[item_id] = storage_dict
             runs[run_key]["results"][model_name][iteration_key] = iteration_dict
             save_json_file(runs, runs_file)

@@ -2,11 +2,40 @@ import math
 import statistics
 import numpy as np
 import scipy.stats
+from scipy.stats import kendalltau
 from loguru import logger
 from typing import Dict, List
 import re
 from judgemark_v2lp.config.constants import REFERENCE_MODEL_SCORES
 from judgemark_v2lp.utils.stats import normalize
+
+def detokenize(tokens: List[str]) -> str:
+    """
+    Very rough undo for common Hugging-Face / SentencePiece / BPE markers:
+      - GPT-2: 'Ġ' prefix → leading space
+      - SentencePiece: '▁' prefix → leading space
+      - newline marker: 'Ċ' prefix → space
+      - BERT WordPieces: '##' prefix → no space, just glue on
+    Falls back to stripping any leading run of those markers, then
+    inserting a single space before each token that isn't a '##' piece.
+    """
+    out = ""
+    for t in tokens:
+        if "Ċ" in t:
+            t = t.replace("Ċ", "\n")
+        
+        if t.startswith("##"):
+            # BERT-style subword: glue to previous
+            out += t[2:]
+        elif t.startswith("Ġ") or t.startswith("▁"):
+            # GPT-2 or SentencePiece: prefix with space
+            if out and not out.endswith(" "):
+                out += " "
+            out += t[1:]
+        else:
+            # Normal token: just append it
+            out += t
+    return out.lstrip()
 
 def parse_scores(judge_model_response: str, logprobs: list) -> Dict[str,float]:
     """
@@ -20,15 +49,32 @@ def parse_scores(judge_model_response: str, logprobs: list) -> Dict[str,float]:
       "Realism Score: 7.5"
       "Melodramatic: 2"
     """
-    scores = {}
+    scores: Dict[str, float] = {}
+    logps ={}
+    pattern = r"(.*?):\s*(?:Score\s+)?(-?\d+(?:\.\d+)?)"
+    choices = [str(i) for i in range(11)]
+    window_size = 20
     # Look for lines or statements like "Something: 3.5" or "Something Score 3.5"
-    pattern = r'(.*?):\s*(?:Score\s+)?(-?\d+(?:\.\d+)?)'
-    matches = re.findall(pattern, judge_model_response)
-    for match in matches:
-        metric_name = match[0].strip()
-        numeric_val = float(match[1])
-        scores[metric_name] = numeric_val
-    return scores
+    for ti, row in enumerate(logprobs):
+        if row['token'] in choices:
+            # get previous window (incl) to check for regexp
+            prev_window = [t['token'] for t in logprobs[max(0, ti-window_size):ti+1]]
+            prev_text = detokenize(prev_window)
+            matches = re.findall(pattern, prev_text)
+            if matches:
+                match = matches[-1]  # take the last match in the window
+                metric_name = match[0].strip()
+                numeric_val = float(match[1])
+
+                scores[metric_name] = numeric_val
+
+                logp_dict = {t['token']:t['logprob'] for t in row['top_logprobs']}
+                logp_arr = [logp_dict.get(c, -100) for c in choices]
+
+                # extra logprob of choices
+                logps[metric_name] = logp_arr
+
+    return scores, logps
 
 def compute_raw_score(scores: Dict[str,float]) -> float:
     """
@@ -273,3 +319,25 @@ def log_score_summary(score_type: str, cross_stats: Dict, model_stats: Dict):
         line = f"{model:.<40} {stats['mean']:.3f} ±{stats['ci95']:.3f}"
         logger.info(line)
     logger.info("------------------------------------")
+
+
+def compute_weighted_score(logp):
+    outs = {}
+    choices = np.arange(11)  # Choices are 0-10
+    for metric, logp_arr in logp.items():
+        probs = np.exp(logp_arr)
+        weights = probs / (probs.sum() + 1e-12)
+        outs[metric] = (weights * choices).sum().item()
+
+    return outs
+
+def compute_ranked_score(logp):
+    outs = {}
+    choices = np.arange(11)  # Choices are 0-10
+    for metric, logp_arr in logp.items():
+        res = kendalltau(choices, logp_arr, variant='b')
+        # correlation weighted by pvalue
+        decision =(res.correlation-0.5)*res.pvalue+0.5
+        outs[metric] = decision.item()
+
+    return outs
