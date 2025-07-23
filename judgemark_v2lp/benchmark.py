@@ -53,9 +53,12 @@ def process_sample(model_name: str, iteration_key: str, item_id: str, item_text:
         final_prompt = final_prompt.replace("[TEST MODEL RESPONSE END]", "")
         
         messages = [{"role": "user", "content": final_prompt}]
-        judge_response = send_to_judge_model(messages, judge_model=judge_model)
+        res_json = send_to_judge_model(messages, judge_model=judge_model)
+
+        judge_response = res_json['choices'][0]['message']['content']
+        logprobs = res_json['choices'][0]['logprobs']['content']
         
-        extracted_scores = parse_scores(judge_response)
+        extracted_scores = parse_scores(judge_response, logprobs)
         raw_score = compute_raw_score(extracted_scores)
         
         with lock:
@@ -63,6 +66,8 @@ def process_sample(model_name: str, iteration_key: str, item_id: str, item_text:
                 "parsed_scores": extracted_scores,
                 "timestamp": datetime.now().isoformat(),
                 "text_length": text_len
+                # res_json['usage']['cost']
+                # res_json['usage']['prompt_tokens_details']['cached_tokens']
             }
             if raw_score is not None:
                 storage_dict["aggregated_score_raw"] = raw_score

@@ -39,12 +39,14 @@ def send_to_judge_model(messages: List[Dict], judge_model: str, max_retries: int
                 ## openrouter specific
                 "provider": {
                     "require_parameters": True, 
-                #    "order": [
-                #        "DeepSeek",
-                #        "DeepInfra",
-                #        "Nebius"
-                #   ],
-                #   "allow_fallbacks": False
+                   "order": [
+                       "OpenAI",
+                       "Lambda",
+                       "DeepSeek",
+                       "DeepInfra",
+                       "Nebius"
+                  ],
+                  "allow_fallbacks": False
                 },
                 "usage": {"include": True},
             }
@@ -53,7 +55,7 @@ def send_to_judge_model(messages: List[Dict], judge_model: str, max_retries: int
             if "error" in res_json:
                 raise requests.exceptions.HTTPError(res_json['error'])
             response.raise_for_status()
-            return res_json['choices'][0]['message']['content']
+            return res_json#['choices'][0]['message']['content']
         except Exception as e:
             try:
                 logger.debug(response.text)

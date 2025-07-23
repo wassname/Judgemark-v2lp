@@ -8,7 +8,7 @@ import re
 from judgemark_v2lp.config.constants import REFERENCE_MODEL_SCORES
 from judgemark_v2lp.utils.stats import normalize
 
-def parse_scores(judge_model_response: str) -> Dict[str,float]:
+def parse_scores(judge_model_response: str, logprobs: list) -> Dict[str,float]:
     """
     Extracts zero or more named numeric scores from a text using a simple Regex pattern:
 

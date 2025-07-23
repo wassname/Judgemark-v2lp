@@ -8,3 +8,4 @@ ministral-repetition-results.json
 dev
 *.egg-info
 __pycache__
+my_judgemark_runs.json

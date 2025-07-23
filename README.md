@@ -7,10 +7,15 @@ Changes
   - `--score-weighted`
   - `--score-ranklog`
 
+models
+- meta-llama/llama-3.2-3b-instruct	
+- qwen/qwen-2.5-72b-instruct
+- deepseek/deepseek-chat-v3-0324	
+- nousresearch/hermes-3-llama-3.1-405b
 
 ```bash
 python judgemark_v2.py \
-  --judge-model "openai/gpt-4o-mini" \
+  --judge-model "meta-llama/llama-3.2-3b-instruct" \
   --samples-file data/judgemark_v2.1_samples.json \
   --prompts-file data/judge_prompts.json \
   --runs-file my_judgemark_runs.json \
