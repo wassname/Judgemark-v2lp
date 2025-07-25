@@ -71,8 +71,8 @@ def parse_args():
     parser.add_argument(
         '--save-raw-judge-output',
         action='store_true',
-        default=True,
-        help='If set, store the raw judge model output in the results JSON (default: true)'
+        default=False,
+        help='If set, store the raw judge model output in the results JSON (default: false)'
     )
     parser.add_argument(
         '--score-weighted',

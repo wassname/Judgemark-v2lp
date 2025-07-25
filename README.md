@@ -1,11 +1,32 @@
 Fork of judgemark to see if using weighted logprob, or ranklogprob work better than the current method
 
+
+Results
+
+| Method                      | Final Judgemark (raw) | Final Judgemark (cal) |
+| --------------------------- | --------------------- | --------------------- |
+| **Normed logp**             | 0.673                 | 0.736                 |
+| Weighted                    | 0.635                 | 0.660                 |
+| argmax (regular)            | 0.635                 | 0.659                 |
+| ranked (without stretching) | 0.336                 | 0.284                 |
+
+Here normed logp, takes the logprobs of the choices [0,10] for each raning. Then it normalises each rating `logprobs - logprobs.mean()`. Then it use kendall's tau to see which is consistent with a high score.
+
+TODO try norm then weight
+
 Changes
-- openrouters only
-- get logprobs
-- added options
-  - `--score-weighted`
-  - `--score-ranklog`
+- [x] openrouters only
+- [x] get logprobs
+- [x] also get weighted and ranklogprobs and their scores
+
+
+note the rererence scores are https://old.reddit.com/r/LocalLLaMA/comments/1cd2jco/judgemark_how_well_a_llm_judge_can_evaluate/
+
+    correlation with arena elo
+    correlation with eq-bench
+    standard deviation of the test model scores (indicates reliable separation over multiple test items)
+    cluster analysis (ANOVA f-statistic)
+
 
 models
 - meta-llama/llama-3.2-3b-instruct	
@@ -14,15 +35,26 @@ models
 - nousresearch/hermes-3-llama-3.1-405b
 
 ```bash
-python judgemark_v2.py \
+# test
+uv run python judgemark_v2.py \
   --judge-model "meta-llama/llama-3.2-3b-instruct" \
   --samples-file data/judgemark_v2.1_samples.json \
   --prompts-file data/judge_prompts.json \
-  --runs-file my_judgemark_runs.json \
+  --runs-file outputs/my_judgemark_runs.json \
   --threads 1 \
   --num-runs 1 \
   --save-raw-judge-output
+
+uv run python judgemark_v2.py \
+  --judge-model "deepseek/deepseek-chat-v3-0324" \
+  --samples-file data/judgemark_v2.1_samples.json \
+  --prompts-file data/judge_prompts.json \
+  --runs-file outputs/my_judgemark_runs2.json \
+  --num-runs 1 \
+  --save-raw-judge-output
 ```
+
+nbs/01_res.ipunb
 
 ## Results
 

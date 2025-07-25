@@ -8,7 +8,7 @@ from scipy.stats import spearmanr, theilslopes
 from judgemark_v2lp.config.constants import NEGATIVE_MARKERS, MODEL_NAME_REPLACEMENTS
 
 
-def create_side_by_side_score_charts(run_data: Dict, judge_model: str, samples_data: Dict):
+def create_side_by_side_score_charts(run_data: Dict, judge_model: str, samples_data: Dict, method: str = "raw"):
     """
     Produces two figures:
       • Figure #1 with three subplots side-by-side:
@@ -143,12 +143,16 @@ def create_side_by_side_score_charts(run_data: Dict, judge_model: str, samples_d
     
     # Adjust layout with more space
     plt.tight_layout(rect=[0, 0.03, 1, 0.95])
-    
-    plt.savefig(f"results/charts/judgemark_3chart_{sanitized_judge}.png", 
-                bbox_inches='tight', 
-                dpi=150,
-                pad_inches=0.5)
-    plt.close(fig1)
+
+    if plt.get_backend() == "inline":
+        # In Jupyter, we show the figure inline
+        plt.show()
+    else:
+        plt.savefig(f"results/charts/judgemark_3chart_{method}_{sanitized_judge}.png", 
+                    bbox_inches='tight', 
+                    dpi=150,
+                    pad_inches=0.5)
+        plt.close(fig1)
 
     # -------------------------------------------------------------------
     # 2) Second Figure: A 4×4 grid of scatter plots (per-model), 
@@ -236,5 +240,9 @@ def create_side_by_side_score_charts(run_data: Dict, judge_model: str, samples_d
         axes2[row, col].axis("off")
     
     plt.tight_layout()
-    plt.savefig(f"results/charts/judgemark_scattergrid_{sanitized_judge}.png", bbox_inches='tight', dpi=200)
-    plt.close(fig2)
+    if plt.get_backend() == "inline":
+        # In Jupyter, we show the figure inline
+        plt.show()
+    else:
+        plt.savefig(f"results/charts/judgemark_scattergrid_{method}_{sanitized_judge}.png", bbox_inches='tight', dpi=200)
+        plt.close(fig2)

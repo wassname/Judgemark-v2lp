@@ -5,8 +5,10 @@ description = "**Judgemark V2** is a benchmark that evaluates how well a languag
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
+    "great-tables>=0.18.0",
     "loguru>=0.7.3",
     "matplotlib>=3.7",
+    "polars>=1.31.0",
     "python-dotenv>=1.1.1",
     "scipy>=1.10",
     "transformers>=4.26",

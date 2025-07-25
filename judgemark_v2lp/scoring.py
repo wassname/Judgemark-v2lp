@@ -335,9 +335,16 @@ def compute_ranked_score(logp):
     outs = {}
     choices = np.arange(11)  # Choices are 0-10
     for metric, logp_arr in logp.items():
-        res = kendalltau(choices, logp_arr, variant='b')
+        # res = kendalltau(choices, logp_arr, variant='b')
+
+        # lets just use the common numbers 1,3,5,7,9, as some models like to skip some
+        res = kendalltau(choices[1::2], logp_arr[1::2], variant='b')
+        # print(res.correlation, res.pvalue, res2.correlation, res2.pvalue)
         # correlation weighted by pvalue
-        decision =(res.correlation-0.5)*res.pvalue+0.5
+
+
+        decision = (res.correlation+1)*5 # scale to 0-10
+        # decision = (2*decision*res.pvalue).clip(0, 10)
         outs[metric] = decision.item()
 
     return outs

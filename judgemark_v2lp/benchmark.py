@@ -83,7 +83,7 @@ def process_sample(model_name: str, iteration_key: str, item_id: str, item_text:
             
             if save_raw_judge_output:
                 storage_dict["judge_response"] = judge_response
-                storage_dict["logprobs"] = logprobs
+                storage_dict["logp"] = logp
 
             iteration_dict[item_id] = storage_dict
             runs[run_key]["results"][model_name][iteration_key] = iteration_dict
@@ -111,7 +111,7 @@ def process_sample(model_name: str, iteration_key: str, item_id: str, item_text:
             })
             save_json_file(runs, runs_file)
 
-def finalize_scores_and_compute_judgemark(runs: dict, run_key: str, samples_data: dict):
+def finalize_scores_and_compute_judgemark(runs: dict, run_key: str, samples_data: dict, score_key="aggregated_score_raw"):
     """
     Compute metrics for both raw and calibrated scores, including stability tests,
     normalized components, and detailed distributions.
@@ -142,8 +142,8 @@ def finalize_scores_and_compute_judgemark(runs: dict, run_key: str, samples_data
                 
             for item_id, item_info in it_val.items():
                 if (isinstance(item_info, dict) and 
-                    "aggregated_score_raw" in item_info):
-                    raw_score = item_info["aggregated_score_raw"]
+                    score_key in item_info):
+                    raw_score = item_info[score_key]
                     
                     # Collect raw score globally
                     raw_scores_by_model_all[model_name].append(raw_score)
@@ -185,7 +185,7 @@ def finalize_scores_and_compute_judgemark(runs: dict, run_key: str, samples_data
                 continue
             for item_id, item_info in it_val.items():
                 if (isinstance(item_info, dict) and 
-                    "aggregated_score_raw" in item_info):
+                    score_key in item_info):
                     item_info["aggregated_score_calibrated"] = calibrated[idx]
                     idx += 1
         
@@ -351,7 +351,7 @@ def finalize_scores_and_compute_judgemark(runs: dict, run_key: str, samples_data
     run_data["final_judgemark_score"] = final_score_calibrated
 
     # 10. Create visualizations + logs
-    create_side_by_side_score_charts(run_data, run_data["judge_model"], samples_data)
+    create_side_by_side_score_charts(run_data, run_data["judge_model"], samples_data, method=score_key[:3])
     
     log_score_summary(
         "RAW SCORES", 
@@ -366,6 +366,10 @@ def finalize_scores_and_compute_judgemark(runs: dict, run_key: str, samples_data
 
     logger.info(f"Final Judgemark (raw)   = {final_score_raw:.3f}")
     logger.info(f"Final Judgemark (cal)  = {final_score_calibrated:.3f}")
+    return {
+        "final_judgemark_score_raw": final_score_raw,
+        "final_judgemark_score_calibrated": final_score_calibrated,
+    }
 
 
 def sanitize_model_name(name: str) -> str:
@@ -467,7 +471,7 @@ def run_judgemark_v2(
     try:
         if num_threads <= 1:
             # Single-threaded mode
-            for item in items_to_process:
+            for item in tqdm(items_to_process):
                 if should_exit:
                     break
                 process_sample(
@@ -542,7 +546,9 @@ def run_judgemark_v2(
                     lock, num_threads
                 )
             # Compute final stats
-            finalize_scores_and_compute_judgemark(runs, run_key, samples_data)
+            finalize_scores_and_compute_judgemark(runs, run_key, samples_data, score_key="aggregated_score_raw")
+            finalize_scores_and_compute_judgemark(runs, run_key, samples_data, score_key="aggregated_score_weighted")
+            finalize_scores_and_compute_judgemark(runs, run_key, samples_data, score_key="aggregated_score_ranked")
 
         # Save final
         save_json_file(runs, runs_file)
