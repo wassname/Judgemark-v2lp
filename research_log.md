@@ -39,3 +39,14 @@ normal ranked (without stretching)
 normed and weighted
 Final Judgemark (raw)   = 0.624
 Final Judgemark (cal)  = 0.645
+
+
+
+| name          | score    | score_norm |
+|---------------|----------|------------|
+| ranked_scaled | 0.67     |     0.79   |
+| ranked_norm   | 0.67     |     0.73   |
+| weighted      | 0.63     |     0.65   |
+| raw           | 0.63     |     0.65   |
+| weighted_norm | 0.62     |     0.64   |
+| ranked        | 0.33     |     0.28   |
