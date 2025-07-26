@@ -8,7 +8,7 @@ from scipy.stats import spearmanr, theilslopes
 from judgemark_v2lp.config.constants import NEGATIVE_MARKERS, MODEL_NAME_REPLACEMENTS
 
 
-def create_side_by_side_score_charts(run_data: Dict, judge_model: str, samples_data: Dict, method: str = "raw"):
+def create_side_by_side_score_charts(run_data: Dict, judge_model: str, samples_data: Dict, method: str = "raw", do_plot: int = 1):
     """
     Produces two figures:
       • Figure #1 with three subplots side-by-side:
@@ -86,6 +86,8 @@ def create_side_by_side_score_charts(run_data: Dict, judge_model: str, samples_d
     heatmap_data = np.array(heatmap_rows, dtype=float)
     
     # 1.B) Plot the main figure with 3 subplots
+    if do_plot < 1:
+        return
     fig1, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(20, 7))  # Increased height
 
     # Increase the base font size for all text elements
@@ -139,7 +141,7 @@ def create_side_by_side_score_charts(run_data: Dict, judge_model: str, samples_d
     # Overall title
     
     sanitized_judge = re.sub(r"[^\w\-]", "-", judge_model.replace("/", "__"))
-    fig1.suptitle(f"Judgemark: Raw/Calibrated/Heatmap - Judge: {judge_model}", fontsize=20)
+    fig1.suptitle(f"Judgemark: Raw/Calibrated/Heatmap - Judge: {judge_model}. {method}", fontsize=20)
     
     # Adjust layout with more space
     plt.tight_layout(rect=[0, 0.03, 1, 0.95])
@@ -169,8 +171,10 @@ def create_side_by_side_score_charts(run_data: Dict, judge_model: str, samples_d
         model_list_for_scatter = model_list_for_scatter[:16]
 
     # Build figure and subplots: 4x4
+    if do_plot<1:
+        return
     fig2, axes2 = plt.subplots(4, 4, figsize=(20, 20))  # each cell is a scatter
-    fig2.suptitle(f"Judgemark: Per-Model Length vs. Score - Judge: {judge_model}", fontsize=18)
+    fig2.suptitle(f"Judgemark: Per-Model Length vs. Score - Judge: {judge_model}. {method}", fontsize=18)
     
     # We might have fewer than 16 models. We'll track them by row & col.
     for idx, mname in enumerate(model_list_for_scatter):

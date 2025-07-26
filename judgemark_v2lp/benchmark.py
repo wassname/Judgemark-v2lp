@@ -111,13 +111,14 @@ def process_sample(model_name: str, iteration_key: str, item_id: str, item_text:
             })
             save_json_file(runs, runs_file)
 
-def finalize_scores_and_compute_judgemark(runs: dict, run_key: str, samples_data: dict, score_key="aggregated_score_raw"):
+def finalize_scores_and_compute_judgemark(runs: dict, run_key: str, samples_data: dict, score_key="aggregated_score_raw", do_plot: int = 2, verbosity: int = 1):
     """
     Compute metrics for both raw and calibrated scores, including stability tests,
     normalized components, and detailed distributions.
     
     Now also returns a final_judgemark_score for BOTH raw and calibrated statistics.
     """
+    s = ""
     run_data = runs[run_key]
     results = run_data.get("results", {})
 
@@ -221,20 +222,21 @@ def finalize_scores_and_compute_judgemark(runs: dict, run_key: str, samples_data
     )
 
     # 6. Separability metrics
-    compute_separability_metrics(run_data, raw_scores_by_model_all, label="raw")
-    compute_separability_metrics(run_data, calibrated_scores_by_model_all, label="calibrated")
+    s1, _ = compute_separability_metrics(run_data, raw_scores_by_model_all, label="raw")
+    s2, _ = compute_separability_metrics(run_data, calibrated_scores_by_model_all, label="calibrated")
+    s += s1
+    s += s2
 
-    
     # 8. Compute iteration stability for raw & calibrated
     compute_iteration_stability(run_data, label="raw")  
     compute_iteration_stability(run_data, label="calibrated")
     random_tau_raw = compute_randomized_iteration_rank_stability_by_item(run_data, label="raw", n_shuffles=1000)
     random_tau_cal = compute_randomized_iteration_rank_stability_by_item(run_data, label="calibrated", n_shuffles=1000)
-    logger.info("Score stability (RAW)")
-    logger.info(f"Randomized average Kendall's tau (raw): {random_tau_raw:.3f}")
-    logger.info("Score stability (CALIBRATED)") 
-    logger.info(f"Randomized average Kendall's tau (calibrated): {random_tau_cal:.3f} "
-                 f"({run_data['calibrated_cross_model_stats']['kendall_tau']})")
+    s += "Score stability (RAW)\n"
+    s += f"Randomized average Kendall's tau (raw): {random_tau_raw:.3f}\n"
+    s += "Score stability (CALIBRATED)\n"
+    s += f"Randomized average Kendall's tau (calibrated): {random_tau_cal:.3f} "
+    s += f"({run_data['calibrated_cross_model_stats']['kendall_tau']})\n"
 
     # 9. Compute the final Judgemark scores (one using raw stats, one using calibrated)
 
@@ -351,14 +353,14 @@ def finalize_scores_and_compute_judgemark(runs: dict, run_key: str, samples_data
     run_data["final_judgemark_score"] = final_score_calibrated
 
     # 10. Create visualizations + logs
-    create_side_by_side_score_charts(run_data, run_data["judge_model"], samples_data, method=score_key[:3])
+    create_side_by_side_score_charts(run_data, run_data["judge_model"], samples_data, method=score_key[:3], do_plot=do_plot)
     
-    log_score_summary(
+    s += log_score_summary(
         "RAW SCORES", 
         run_data["raw_cross_model_stats"], 
         run_data["raw_model_stats"]
     )
-    log_score_summary(
+    s += log_score_summary(
         "CALIBRATED SCORES", 
         run_data["calibrated_cross_model_stats"],
         run_data["calibrated_model_stats"]

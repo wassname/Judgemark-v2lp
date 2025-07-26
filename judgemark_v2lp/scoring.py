@@ -302,14 +302,15 @@ def apply_landmark_calibration(x, config):
 
 def log_score_summary(score_type: str, cross_stats: Dict, model_stats: Dict):
     """Log a readable summary of score statistics."""
-    logger.info(f"\n------- {score_type} Summary -------")
-    logger.info(f"ANOVA F-value: {cross_stats['anova_f']:.4f}, p={cross_stats['anova_p']:.4f}")
-    logger.info(f"Kruskal-Wallis: {cross_stats['kw_stat']:.4f}, p={cross_stats['kw_p']:.4f}")
-    logger.info(f"Pearson r={cross_stats['pearson_r']:.4f}")
-    logger.info(f"Kendall τ={cross_stats['kendall_tau']:.4f}")
-    logger.info(f"Std.Dev across models: {cross_stats['std_dev_across_models']:.4f}")
-    
-    logger.info("\nModel Scores:")
+    s = ""
+    s += f"\n------- {score_type} Summary -------"
+    s += f"ANOVA F-value: {cross_stats['anova_f']:.4f}, p={cross_stats['anova_p']:.4f}"
+    s += f"Kruskal-Wallis: {cross_stats['kw_stat']:.4f}, p={cross_stats['kw_p']:.4f}"
+    s += f"Pearson r={cross_stats['pearson_r']:.4f}"
+    s += f"Kendall τ={cross_stats['kendall_tau']:.4f}"
+    s += f"Std.Dev across models: {cross_stats['std_dev_across_models']:.4f}"
+
+    s += "\nModel Scores:"
     sorted_models = sorted(
         model_stats.items(),
         key=lambda kv: kv[1]["mean"],
@@ -317,8 +318,10 @@ def log_score_summary(score_type: str, cross_stats: Dict, model_stats: Dict):
     )
     for model, stats in sorted_models:
         line = f"{model:.<40} {stats['mean']:.3f} ±{stats['ci95']:.3f}"
-        logger.info(line)
-    logger.info("------------------------------------")
+        s += line
+    s += "\n------------------------------------"
+    logger.info(s)
+    return s
 
 
 def compute_weighted_score(logp):

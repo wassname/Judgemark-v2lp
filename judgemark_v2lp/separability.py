@@ -296,13 +296,15 @@ def compute_separability_metrics(
     metrics_label["modulated_ci95"] = modulated_ci95    
 
     # Logging summary
-    logger.info(f"\n--- {label.upper()} SEPARABILITY METRICS ---")
-    logger.info(f"Adjacent 99% CI Overlap fraction: {adj_frac_overlap:.3f}")
-    logger.info(f"Sum of adjacent 99% CI Overlap magnitude (scale={scale_factor}): "
-                 f"{sum_overlap_magnitude:.3f}")
-    logger.info(f"CI99 Overlap pct: "
-                 f"{ci99_overlap_percentage_adjacent_avg:.3f}")
-    
-    logger.info(f"Avg. |Cohen's d| for adjacent pairs: {avg_cohens_d:.3f}")
-    logger.info(f"Average EMD across all pairs: {emd_data['average']:.3f}")
-    logger.info(f"Avg. CI95 half-width: {avg_ci95:.3f} (modulated: {modulated_ci95:.3f})")
+    s = ""
+    s += f"\n--- {label.upper()} SEPARABILITY METRICS ---\n"
+    s += f"Adjacent 99% CI Overlap fraction: {adj_frac_overlap:.3f}\n"
+    s += f"Sum of adjacent 99% CI Overlap magnitude (scale={scale_factor}): "
+    s += f"{sum_overlap_magnitude:.3f}\n"
+    s += f"CI99 Overlap pct: "
+    s += f"{ci99_overlap_percentage_adjacent_avg:.3f}\n"
+    s += f"Avg. |Cohen's d| for adjacent pairs: {avg_cohens_d:.3f}\n"
+    s += f"Average EMD across all pairs: {emd_data['average']:.3f}\n"
+    s += f"Avg. CI95 half-width: {avg_ci95:.3f} (modulated: {modulated_ci95:.3f})\n"
+    logger.info(s)
+    return s, metrics_label
