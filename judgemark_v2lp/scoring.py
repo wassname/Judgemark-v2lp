@@ -341,7 +341,7 @@ def compute_ranked_score(logp):
         # res = kendalltau(choices, logp_arr, variant='b')
 
         # lets just use the common numbers 1,3,5,7,9, as some models like to skip some
-        res = kendalltau(choices[1::2], logp_arr[1::2], variant='b')
+        res = kendalltau(choices, logp_arr, variant='b')
         # print(res.correlation, res.pvalue, res2.correlation, res2.pvalue)
         # correlation weighted by pvalue
 

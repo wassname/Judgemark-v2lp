@@ -12,14 +12,15 @@ This project compares different methods of extracting scores from language model
 
 ## Results
 
-| Method        | Score | Score (Normalized) |
-|---------------|-------|-------------------|
-| ranked_scaled | 0.67  | 0.79             |
-| ranked_norm   | 0.67  | 0.73             |
-| weighted      | 0.63  | 0.65             |
-| raw           | 0.63  | 0.65             |
-| weighted_norm | 0.62  | 0.64             |
-| ranked        | 0.33  | 0.28             |
+
+| Method          | Score    | Score (Normalized) |
+|---------------|----------|------------|
+| ranked_scaled | 0.629332 |       0.80 |
+| ranked_norm   | 0.654562 |       0.74 |
+| weighted      | 0.634804 |       0.65 |
+| raw           | 0.634528 |       0.65 |
+| weighted_norm | 0.623806 |       0.64 |
+| ranked        | 0.336333 |       0.28 |
 
 *Results for DeepSeek Chat V3 0324*
 
