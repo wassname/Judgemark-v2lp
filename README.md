@@ -1,4 +1,4 @@
-Fork of judgemark to see if using weighted logprob, or ranklogprob work better than the current method
+Fork of judgemark to see if using weighted logprob, or ranked logprob work better than the current method
 
 
 Results
@@ -13,29 +13,33 @@ Results
 | weighted_norm | 0.62     |     0.64   |
 | ranked        | 0.33     |     0.28   |
 
-Here normed logp, takes the logprobs of the choices [0,10] for each raning. Then it normalises each rating `logprobs - logprobs.mean()`. Then it use kendall's tau to see which is consistent with a high score.
+*Table 1: Judgemark V2 Results* - For DeepSeek Chat V3 0324. Here we compare raw (the normal judgemark method), to weight (weighting by normalised choise probs like [G-Eval](https://arxiv.org/abs/2303.16634), to ranking (comparing the logprob rankings to the ranking of choices using Kendall's tau). 
 
-TODO try norm then weight
+As you can see ranked is best! What is this? Well I'm operation of the assumptions that LLM log probabilities are no real probabilities. Outside of certain losses they don't act like probabilities and don't work well when treated as such. Instead they are more accurately described as a ranking of the choices, since this is how many methods of sampling (e.g. greedy, and top-k) sampling work. Here we look at the full distribution of logprob for the choices e.g. 
+```
+{
+  "0": -1.2,
+  "1": -0.5,
+  "2": -0.3,
+  "3": -0.1,
+  "4": -0.05,
+  "5": -0.02,
+  "6": -0.01,
+  "7": -0.005,
+  "8": -0.002,
+  "9": -0.001
+}
+```
+Then we rank the choices by their logprob, and use Kendall's tau to see how well the ranking of the choices matches the ranking of the scores. This is incredibly token efficient! With just one token we get the full distribution of scores, and we can use that to compute a ranking./
+
 
 Changes
 - [x] openrouters only
 - [x] get logprobs
 - [x] also get weighted and ranklogprobs and their scores
+- [ ] recalculate the results in 02_recomp.ipynb
 
 
-note the rererence scores are https://old.reddit.com/r/LocalLLaMA/comments/1cd2jco/judgemark_how_well_a_llm_judge_can_evaluate/
-
-    correlation with arena elo
-    correlation with eq-bench
-    standard deviation of the test model scores (indicates reliable separation over multiple test items)
-    cluster analysis (ANOVA f-statistic)
-
-
-models
-- meta-llama/llama-3.2-3b-instruct	
-- qwen/qwen-2.5-72b-instruct
-- deepseek/deepseek-chat-v3-0324	
-- nousresearch/hermes-3-llama-3.1-405b
 
 ```bash
 # test
@@ -57,7 +61,6 @@ uv run python judgemark_v2.py \
   --save-raw-judge-output
 ```
 
-nbs/01_res.ipunb
 
 ## Results
 
