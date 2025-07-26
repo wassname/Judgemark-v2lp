@@ -25,6 +25,12 @@ This project compares different methods of extracting scores from language model
 
 The ranking approach performs best, particularly when scaled. This approach treats LLM log probabilities as rankings rather than true probabilities, which aligns better with how sampling methods like greedy and top-k actually work.
 
+- ranked_scaled: this method is kendall tau (scaled to [0, 10] after normalising by the mean log probs over all samples 
+  `kendallstau(logprobs-logprobs_all_mean(), range(10).collection`
+- ranked: kendall tau (scaled to [0, 10]
+- weighted: this method is similar to G-Eval, where the log probabilities are used to weight the choices based on their normalized probabilities.\
+  - `weighted_choice = choice * logprob / sum(logprobs) * 10`
+
 ## Methodology: Ranking Approach
 
 Instead of treating log probabilities as probabilities, the ranking method:
