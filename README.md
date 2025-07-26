@@ -3,12 +3,15 @@ Fork of judgemark to see if using weighted logprob, or ranklogprob work better t
 
 Results
 
-| Method                      | Final Judgemark (raw) | Final Judgemark (cal) |
-| --------------------------- | --------------------- | --------------------- |
-| **Normed logp**             | 0.673                 | 0.736                 |
-| Weighted                    | 0.635                 | 0.660                 |
-| argmax (regular)            | 0.635                 | 0.659                 |
-| ranked (without stretching) | 0.336                 | 0.284                 |
+
+| name          | score    | score_norm |
+|---------------|----------|------------|
+| ranked_scaled | 0.67     |     0.79   |
+| ranked_norm   | 0.67     |     0.73   |
+| weighted      | 0.63     |     0.65   |
+| raw           | 0.63     |     0.65   |
+| weighted_norm | 0.62     |     0.64   |
+| ranked        | 0.33     |     0.28   |
 
 Here normed logp, takes the logprobs of the choices [0,10] for each raning. Then it normalises each rating `logprobs - logprobs.mean()`. Then it use kendall's tau to see which is consistent with a high score.
 
