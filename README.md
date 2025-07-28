@@ -9,17 +9,29 @@ This project compares different methods of extracting scores from language model
 - **Raw**: Traditional text-based scoring (baseline Judgemark method)
 - **Weighted**: Log probability weighting using normalized choice probabilities (similar to [G-Eval](https://arxiv.org/abs/2303.16634))
 - **Ranked**: Ranking-based evaluation using Kendall's tau correlation between log probability rankings and score rankings
-
+****
 ## Results
 
+| name          | judgemark_score_calib | stability_calib | separability_calib | human_correlation_calib |
+| ------------- | --------------------- | --------------- | ------------------ | ----------------------- |
+| ranked_scaled | **0.788**             | **1.0**         | **0.785**          | 0.592                   |
+| published     | 0.761                 | 0.894           | 0.691              | **0.908**               |
+| ranked        | 0.74                  | 0.895           | 0.665              | 0.882                   |
+| raw           | 0.731                 | 0.895           | 0.653              | 0.882                   |
+| weighted      | 0.716                 | 0.886           | 0.633              | 0.876                   |
+| ranked_norm   | 0.575                 | 0.644           | 0.506              | 0.781                   |
+| weighted_norm | 0.545                 | 0.547           | 0.49               | 0.761                   |
 
-| Method        | Score    | Score (Normalized) |
-|---------------|----------|------------|
-| ranked_scaled |     0.62 |       0.80 |
-| ranked_norm   |     0.65 |       0.74 |
-| weighted      |     0.63 |       0.65 |
-| raw (baseline)|     0.63 |       0.65 |
-| weighted_norm |     0.62 |       0.64 |
+*results for DeepSeek R1**
+
+
+| Method         | Score | Score (Normalized) |
+| -------------- | ----- | ------------------ |
+| ranked_scaled  | 0.62  | 0.80               |
+| ranked_norm    | 0.65  | 0.74               |
+| weighted       | 0.63  | 0.65               |
+| raw (baseline) | 0.63  | 0.65               |
+| weighted_norm  | 0.62  | 0.64               |
 
 *Results for DeepSeek Chat V3 0324*
 
@@ -92,7 +104,16 @@ uv run python judgemark_v2.py \
   --save-raw-judge-output
 
 uv run python judgemark_v2.py \
-  --judge-model "deepseek/deepseek-chat-v3-0324" \
+  --judge-model "qwen/qwen3-235b-a22b" \
+  --samples-file data/judgemark_v2.1_samples.json \
+  --prompts-file data/judge_prompts.json \
+  --runs-file outputs/my_judgemark_runs2.json \
+  --num-runs 1 \
+  --save-raw-judge-output \
+  --threads 8
+
+uv run python judgemark_v2.py \
+  --judge-model "deepseek/deepseek-r1" \
   --samples-file data/judgemark_v2.1_samples.json \
   --prompts-file data/judge_prompts.json \
   --runs-file outputs/my_judgemark_runs2.json \

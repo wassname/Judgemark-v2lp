@@ -224,8 +224,8 @@ def finalize_scores_and_compute_judgemark(runs: dict, run_key: str, samples_data
     # 6. Separability metrics
     s1, _ = compute_separability_metrics(run_data, raw_scores_by_model_all, label="raw")
     s2, _ = compute_separability_metrics(run_data, calibrated_scores_by_model_all, label="calibrated")
-    s += s1
-    s += s2
+    s += s1 + "\n"
+    s += s2 + "\n"
 
     # 8. Compute iteration stability for raw & calibrated
     compute_iteration_stability(run_data, label="raw")  
@@ -235,7 +235,7 @@ def finalize_scores_and_compute_judgemark(runs: dict, run_key: str, samples_data
     s += "Score stability (RAW)\n"
     s += f"Randomized average Kendall's tau (raw): {random_tau_raw:.3f}\n"
     s += "Score stability (CALIBRATED)\n"
-    s += f"Randomized average Kendall's tau (calibrated): {random_tau_cal:.3f} "
+    s += f"Randomized average Kendall's tau (calibrated): {random_tau_cal:.3f} \n"
     s += f"({run_data['calibrated_cross_model_stats']['kendall_tau']})\n"
 
     # 9. Compute the final Judgemark scores (one using raw stats, one using calibrated)
@@ -359,18 +359,27 @@ def finalize_scores_and_compute_judgemark(runs: dict, run_key: str, samples_data
         "RAW SCORES", 
         run_data["raw_cross_model_stats"], 
         run_data["raw_model_stats"]
-    )
+    ) + "\n"
     s += log_score_summary(
         "CALIBRATED SCORES", 
         run_data["calibrated_cross_model_stats"],
         run_data["calibrated_model_stats"]
-    )
-
-    logger.info(f"Final Judgemark (raw)   = {final_score_raw:.3f}")
-    logger.info(f"Final Judgemark (cal)  = {final_score_calibrated:.3f}")
+    ) + "\n"
+    s += f"Final Judgemark (raw)   = {final_score_raw:.3f}\n"
+    s += f"Final Judgemark (cal)  = {final_score_calibrated:.3f}\n"
+    logger.info(s)
     return {
-        "final_judgemark_score_raw": final_score_raw,
-        "final_judgemark_score_calibrated": final_score_calibrated,
+        "judgemark_score": final_score_raw,
+        "judgemark_score_calib": final_score_calibrated,
+
+        "stability": raw_norm["kendall_tau_bootstrapped"],
+        "stability_calib": norm["kendall_tau_bootstrapped"],
+
+        "separability": raw_separability,
+        "separability_calib": calibrated_separability,
+
+        "human_correlation": raw_norm["kendall_tau"],
+        "human_correlation_calib": norm["kendall_tau"],
     }
 
 

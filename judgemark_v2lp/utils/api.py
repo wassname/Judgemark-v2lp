@@ -38,8 +38,9 @@ def send_to_judge_model(messages: List[Dict], judge_model: str, max_retries: int
 
                 ## openrouter specific
                 "provider": {
-                    "require_parameters": True, 
+                "require_parameters": True, 
                    "order": [
+                       "Cerebras",
                        "OpenAI",
                        "Lambda",
                        "DeepSeek",

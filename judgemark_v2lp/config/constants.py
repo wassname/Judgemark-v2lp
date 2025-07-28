@@ -12,8 +12,9 @@ STABILITY_REPS = 100
 # note the rererence scores are https://old.reddit.com/r/LocalLLaMA/comments/1cd2jco/judgemark_how_well_a_llm_judge_can_evaluate/
 #     correlation with arena elo https://huggingface.co/spaces/lmarena-ai/chatbot-arena-leaderboard
 REFERENCE_MODEL_SCORES = {
+    # "DeepSeek-R1": 1357, 
+    "DeepSeek-R1": 1430, # !! need to update this
     "gpt-4o-2024-11-20": 1402,
-    "DeepSeek-R1": 1357, 
     "gemini-1.5-pro-002": 1333,
     "gemini-1.5-pro-001": 1276,
     "claude-3-5-sonnet-20240620": 1243,

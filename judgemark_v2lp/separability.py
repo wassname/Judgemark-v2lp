@@ -296,12 +296,12 @@ def compute_separability_metrics(
     metrics_label["modulated_ci95"] = modulated_ci95    
 
     # Logging summary
-    s = ""
+    s = "\n\n"
     s += f"\n--- {label.upper()} SEPARABILITY METRICS ---\n"
     s += f"Adjacent 99% CI Overlap fraction: {adj_frac_overlap:.3f}\n"
-    s += f"Sum of adjacent 99% CI Overlap magnitude (scale={scale_factor}): "
+    s += f"Sum of adjacent 99% CI Overlap magnitude (scale={scale_factor}): \n"
     s += f"{sum_overlap_magnitude:.3f}\n"
-    s += f"CI99 Overlap pct: "
+    s += f"CI99 Overlap pct: \n"
     s += f"{ci99_overlap_percentage_adjacent_avg:.3f}\n"
     s += f"Avg. |Cohen's d| for adjacent pairs: {avg_cohens_d:.3f}\n"
     s += f"Average EMD across all pairs: {emd_data['average']:.3f}\n"
